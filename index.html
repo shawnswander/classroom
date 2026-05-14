@@ -895,7 +895,13 @@ button {
 
 .lesson-behavior-grid,
 .lesson-student-grid {
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.lesson-quick-add-wrap {
+  display: grid;
+  gap: 10px;
+  margin-top: 4px;
 }
 
 @media (max-width: 980px) {
@@ -972,6 +978,10 @@ button {
 
   .lesson-behavior-drawer.is-open {
     transform: translateY(0);
+  }
+
+  .lesson-student-grid {
+    grid-template-columns: 1fr;
   }
 }
   </style>
@@ -2665,23 +2675,26 @@ function renderLessonScreen(container, vm, actions) {
               <input id="customNegativeInput" class="input" type="text" placeholder="Other negative" />
             </label>
           </div>
-          <div class="banner lesson-selection-banner">${selectedBehaviorLabel}</div>
         </section>
 
-        <section class="lesson-drawer-section">
+        <section class="lesson-drawer-section" id="lessonStudentSection">
           <div class="lesson-drawer-subheader">
             <h3>Students</h3>
             <span class="hint">Tap a name to log the selected behavior.</span>
           </div>
-          <div class="field-stack lesson-drawer-stack">
-            <label class="field">
-              <span class="label">Quick add student</span>
-              <input id="quickAddStudentInput" class="input" type="text" placeholder="Add a student to this hour" />
-            </label>
-            <button id="quickAddStudentBtn" class="btn-ghost">Quick add</button>
-          </div>
+          <div class="banner lesson-selection-banner">${selectedBehaviorLabel}</div>
           <div class="student-grid lesson-student-grid">
             ${vm.roster.map((student) => `<button class="student-chip" data-student-name="${escapeHtml(student)}">${escapeHtml(student)}</button>`).join("")}
+          </div>
+          <div class="lesson-quick-add-wrap">
+            <button id="toggleQuickAddStudentBtn" class="btn-ghost">${vm.quickAddStudentOpen ? "Cancel" : "Quick add"}</button>
+            <div class="field-stack lesson-drawer-stack ${vm.quickAddStudentOpen ? "" : "hidden"}">
+              <label class="field">
+                <span class="label">Add student</span>
+                <input id="quickAddStudentInput" class="input" type="text" placeholder="Student name" />
+              </label>
+              <button id="quickAddStudentBtn" class="btn">Add student</button>
+            </div>
           </div>
         </section>
 
@@ -2713,6 +2726,7 @@ function renderLessonScreen(container, vm, actions) {
   container.querySelector("#annotationGreenBtn")?.addEventListener("click", () => actions.setAnnotationColor("#32d74b"));
   container.querySelector("#annotationUndoBtn")?.addEventListener("click", actions.undoAnnotation);
   container.querySelector("#annotationClearBtn")?.addEventListener("click", actions.clearAnnotations);
+  container.querySelector("#toggleQuickAddStudentBtn")?.addEventListener("click", actions.toggleQuickAddStudent);
   container.querySelectorAll("[data-behavior-type]").forEach((button) => {
     button.addEventListener("click", () => actions.selectBehavior({
       type: button.dataset.behaviorType,
@@ -2899,6 +2913,7 @@ const state = {
   lessonIndex: 0,
   markdownSlideIndex: 0,
   behaviorMenuOpen: false,
+  quickAddStudentOpen: false,
   selectedBehavior: null,
   coldCallName: "",
   coldCallRemaining: [],
@@ -3278,6 +3293,7 @@ function render() {
         state.lessonIndex = 0;
         state.markdownSlideIndex = 0;
         state.behaviorMenuOpen = false;
+        state.quickAddStudentOpen = false;
         state.selectedBehavior = null;
         state.coldCallName = "";
         resetColdCallRotation();
@@ -3470,6 +3486,7 @@ function render() {
       lessonIndex: state.lessonIndex,
       markdownSlideIndex: state.markdownSlideIndex,
       behaviorMenuOpen: state.behaviorMenuOpen,
+      quickAddStudentOpen: state.quickAddStudentOpen,
       selectedBehavior: state.selectedBehavior,
       coldCallName: state.coldCallName,
       coldCallRemaining: state.coldCallRemaining.length,
@@ -3486,6 +3503,7 @@ function render() {
         state.lessonIndex = 0;
         state.markdownSlideIndex = 0;
         state.behaviorMenuOpen = false;
+        state.quickAddStudentOpen = false;
         state.selectedBehavior = null;
         render();
       },
@@ -3548,6 +3566,10 @@ function render() {
         state.behaviorMenuOpen = !state.behaviorMenuOpen;
         render();
       },
+      toggleQuickAddStudent() {
+        state.quickAddStudentOpen = !state.quickAddStudentOpen;
+        render();
+      },
       closeBehaviorMenu() {
         if (!state.behaviorMenuOpen) {
           return;
@@ -3559,6 +3581,9 @@ function render() {
         state.selectedBehavior = resolveBehaviorSelection(selection);
         state.behaviorMenuOpen = true;
         render();
+        requestAnimationFrame(() => {
+          document.getElementById("lessonStudentSection")?.scrollIntoView({ block: "start", behavior: "smooth" });
+        });
       },
       logBehavior(studentName) {
         logBehavior(studentName);
@@ -3575,6 +3600,7 @@ function render() {
           return;
         }
         model.saveRoster(state.currentHour, `${currentRoster.join("\n")}${currentRoster.length ? "\n" : ""}${trimmed}`);
+        state.quickAddStudentOpen = false;
         resetColdCallRotation();
         render();
       },
