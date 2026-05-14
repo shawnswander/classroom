@@ -358,8 +358,16 @@ button {
 }
 
 .lesson-screen {
-  display: grid;
-  gap: 18px;
+  position: fixed;
+  inset: 0;
+  width: auto;
+  margin: 0;
+  display: block;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(255, 225, 180, 0.38), transparent 32%),
+    radial-gradient(circle at bottom right, rgba(187, 90, 44, 0.14), transparent 26%),
+    linear-gradient(180deg, #f7f2e9 0%, #efe5d3 100%);
 }
 
 .lesson-stage {
@@ -370,9 +378,25 @@ button {
   border: 1px solid rgba(97, 74, 40, 0.12);
 }
 
+.lesson-stage--immersive {
+  position: absolute;
+  inset: 0;
+  min-height: 100vh;
+  padding: 88px 96px 20px 20px;
+  border-radius: 0;
+  background: transparent;
+  border: none;
+}
+
 .lesson-stage-shell {
   position: relative;
-  min-height: 62vh;
+  min-height: 100%;
+  height: 100%;
+  overflow: auto;
+  border-radius: 26px;
+  background: rgba(255, 251, 245, 0.88);
+  border: 1px solid rgba(97, 74, 40, 0.12);
+  box-shadow: 0 16px 48px rgba(56, 39, 17, 0.12);
 }
 
 .lesson-frame {
@@ -384,7 +408,7 @@ button {
 }
 
 .pdf-stage {
-  min-height: 62vh;
+  min-height: 100%;
   overflow: auto;
   display: flex;
   flex-direction: column;
@@ -417,7 +441,7 @@ button {
   background: white;
   border-radius: 18px;
   padding: clamp(20px, 4vw, 48px);
-  min-height: 62vh;
+  min-height: 100%;
   overflow: auto;
   line-height: 1.6;
   font-size: clamp(18px, 2vw, 28px);
@@ -618,6 +642,14 @@ button {
   box-shadow: 0 10px 28px rgba(56, 39, 17, 0.12);
 }
 
+.annotation-toolbar.is-fixed-top {
+  position: fixed;
+  top: 82px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: min(calc(100vw - 120px), 760px);
+}
+
 .annotation-toolbar.is-bottom {
   top: auto;
   bottom: 12px;
@@ -665,10 +697,205 @@ button {
   display: none !important;
 }
 
+.lesson-topbar {
+  position: fixed;
+  top: 18px;
+  left: 20px;
+  right: 96px;
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 16px 10px 10px;
+  border-radius: 999px;
+  background: rgba(255, 252, 246, 0.84);
+}
+
+.lesson-topbar-meta {
+  min-width: 0;
+}
+
+.lesson-topbar-line,
+.lesson-topbar-subline {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lesson-topbar-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+}
+
+.lesson-topbar-subline {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.lesson-topbar-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--accent);
+  flex: 0 0 auto;
+}
+
+.lesson-action-rail {
+  position: fixed;
+  top: 88px;
+  right: 18px;
+  z-index: 13;
+  display: grid;
+  gap: 10px;
+  padding: 12px 10px;
+  border-radius: 24px;
+  background: rgba(255, 252, 246, 0.88);
+}
+
+.lesson-action-btn,
+.lesson-back-btn {
+  width: 52px;
+  height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(97, 74, 40, 0.15);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.84);
+  color: var(--ink);
+  transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease;
+}
+
+.lesson-action-btn:hover,
+.lesson-back-btn:hover {
+  transform: translateY(-1px);
+}
+
+.lesson-action-btn.is-active,
+.lesson-back-btn.is-active {
+  background: var(--accent);
+  color: #fffaf2;
+  border-color: var(--accent);
+}
+
+.lesson-action-btn--small {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+}
+
+.lesson-icon {
+  display: inline-flex;
+  width: 22px;
+  height: 22px;
+}
+
+.lesson-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.lesson-cold-call-badge {
+  position: fixed;
+  top: 88px;
+  right: 92px;
+  z-index: 11;
+  min-width: 220px;
+  max-width: min(360px, calc(100vw - 140px));
+  padding: 16px 18px;
+  border-radius: 22px;
+  background: rgba(255, 251, 244, 0.92);
+}
+
+.lesson-cold-call-name {
+  margin: 10px 0 6px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(28px, 3vw, 42px);
+  line-height: 0.95;
+}
+
+.lesson-overlay-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 14;
+  background: rgba(31, 27, 22, 0.28);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+}
+
+.lesson-overlay-backdrop.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.lesson-behavior-drawer {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  bottom: 18px;
+  z-index: 15;
+  width: min(420px, calc(100vw - 24px));
+  padding: 18px;
+  border-radius: 28px;
+  background: rgba(255, 250, 243, 0.96);
+  transform: translateX(calc(100% + 24px));
+  transition: transform 0.2s ease;
+  overflow: auto;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.lesson-behavior-drawer.is-open {
+  transform: translateX(0);
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.lesson-drawer-header,
+.lesson-drawer-subheader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.lesson-drawer-header h2,
+.lesson-drawer-section h3 {
+  margin: 0;
+}
+
+.lesson-drawer-section {
+  margin-top: 18px;
+  display: grid;
+  gap: 12px;
+}
+
+.lesson-drawer-stack,
+.lesson-selection-banner {
+  margin-top: 4px;
+}
+
+.lesson-behavior-grid,
+.lesson-student-grid {
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+}
+
 @media (max-width: 980px) {
   .hero-grid,
   .split-layout {
     grid-template-columns: 1fr;
+  }
+
+  .lesson-topbar {
+    right: 82px;
+  }
+
+  .lesson-stage--immersive {
+    padding-right: 84px;
   }
 }
 
@@ -681,6 +908,52 @@ button {
   .lesson-row,
   .report-row {
     grid-template-columns: 1fr;
+  }
+
+  .lesson-topbar {
+    left: 12px;
+    right: 12px;
+    top: 12px;
+  }
+
+  .lesson-action-rail {
+    top: auto;
+    right: 12px;
+    left: 12px;
+    bottom: 12px;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    overflow-x: auto;
+  }
+
+  .lesson-stage--immersive {
+    padding: 84px 12px 86px;
+  }
+
+  .annotation-toolbar.is-fixed-top {
+    top: 86px;
+    max-width: calc(100vw - 24px);
+  }
+
+  .lesson-cold-call-badge {
+    top: 86px;
+    left: 12px;
+    right: 12px;
+    max-width: none;
+    min-width: 0;
+  }
+
+  .lesson-behavior-drawer {
+    top: 12px;
+    right: 12px;
+    bottom: 72px;
+    left: 12px;
+    width: auto;
+    transform: translateY(calc(100% + 24px));
+  }
+
+  .lesson-behavior-drawer.is-open {
+    transform: translateY(0);
   }
 }
   </style>
@@ -2217,6 +2490,20 @@ function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
+function renderIcon(name) {
+  const icons = {
+    back: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"/></svg>',
+    previous: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"/></svg>',
+    next: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"/></svg>',
+    file: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l5 5v13H7z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"/><path d="M14 3v5h5" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"/></svg>',
+    coldCall: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 4 10 0 3 5-3 5 3 5H10L7 14l3-5z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.9"/></svg>',
+    annotate: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 20 4.5-1 9.7-9.7a1.8 1.8 0 0 0 0-2.6l-.9-.9a1.8 1.8 0 0 0-2.6 0L5 15.5 4 20Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.8"/><path d="m13 7 4 4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"/></svg>',
+    log: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2.2"/></svg>',
+    close: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"/></svg>'
+  };
+  return icons[name] || "";
+}
+
 function renderLessonScreen(container, vm, actions) {
   const currentRecord = vm.lessonRecords[vm.lessonIndex];
   const lessonLabel = currentRecord
@@ -2245,107 +2532,122 @@ function renderLessonScreen(container, vm, actions) {
     `).join("")
     : '<div class="empty-state">No behaviors logged yet for this hour today.</div>';
 
+  const selectedBehaviorLabel = vm.selectedBehavior
+    ? `Selected: ${escapeHtml(vm.selectedBehavior.category)}${vm.selectedBehavior.type === "negative" ? ` (${vm.selectedBehavior.points} point${vm.selectedBehavior.points === 1 ? "" : "s"})` : ""}`
+    : "Select a behavior, then tap a student.";
+
   container.innerHTML = `
     <section class="screen lesson-screen">
-      <section class="shell-card panel">
-        <div class="screen-header">
+      <header class="lesson-topbar shell-card">
+        <button id="backToHomeBtn" class="lesson-back-btn" aria-label="Exit lesson" title="Exit lesson">
+          <span class="lesson-icon">${renderIcon("back")}</span>
+        </button>
+        <div class="lesson-topbar-meta">
+          <div class="lesson-topbar-line">${escapeHtml(vm.currentHour)}<span class="lesson-topbar-dot"></span>${escapeHtml(vm.currentClass)}</div>
+          <div class="lesson-topbar-subline">${lessonLabel}</div>
+        </div>
+      </header>
+
+      <div class="lesson-action-rail shell-card" aria-label="Lesson actions">
+        <button id="prevLessonBtn" class="lesson-action-btn" aria-label="Previous lesson" title="Previous lesson"><span class="lesson-icon">${renderIcon("previous")}</span></button>
+        <button id="nextLessonBtn" class="lesson-action-btn" aria-label="Next lesson" title="Next lesson"><span class="lesson-icon">${renderIcon("next")}</span></button>
+        <button id="openLessonFileBtn" class="lesson-action-btn" aria-label="Open lesson file" title="Open lesson file"><span class="lesson-icon">${renderIcon("file")}</span></button>
+        <button id="coldCallBtn" class="lesson-action-btn" aria-label="Cold call" title="Cold call"><span class="lesson-icon">${renderIcon("coldCall")}</span></button>
+        <button id="annotationModeBtn" class="lesson-action-btn ${vm.annotation.mode ? "is-active" : ""}" aria-label="Toggle annotation" title="Toggle annotation"><span class="lesson-icon">${renderIcon("annotate")}</span></button>
+        <button id="toggleBehaviorMenuBtn" class="lesson-action-btn ${vm.behaviorMenuOpen ? "is-active" : ""}" aria-label="Open behavior log" title="Open behavior log"><span class="lesson-icon">${renderIcon("log")}</span></button>
+      </div>
+
+      ${vm.coldCallName ? `
+        <div class="lesson-cold-call-badge shell-card">
+          <div class="eyebrow">Cold call</div>
+          <div class="lesson-cold-call-name">${escapeHtml(vm.coldCallName)}</div>
+          <div class="hint">${vm.coldCallRemaining} remaining before reset</div>
+        </div>
+      ` : ""}
+
+      ${vm.annotation.mode ? `
+        <div class="annotation-toolbar is-fixed-top">
+          <button id="annotationPenBtn" class="annotation-tool ${vm.annotation.tool === "pen" ? "is-active" : ""}">Pen</button>
+          <button id="annotationHighlighterBtn" class="annotation-tool ${vm.annotation.tool === "highlighter" ? "is-active" : ""}">HL</button>
+          <button id="annotationEraserBtn" class="annotation-tool ${vm.annotation.tool === "eraser" ? "is-active" : ""}">Eraser</button>
+          <button id="annotationRedBtn" class="annotation-swatch ${vm.annotation.color.toLowerCase() === "#ff3b30" ? "is-active" : ""}" style="background: #ff3b30;" aria-label="Red"></button>
+          <button id="annotationBlueBtn" class="annotation-swatch ${vm.annotation.color.toLowerCase() === "#007aff" ? "is-active" : ""}" style="background: #007aff;" aria-label="Blue"></button>
+          <button id="annotationBlackBtn" class="annotation-swatch ${vm.annotation.color.toLowerCase() === "#1d1d1f" ? "is-active" : ""}" style="background: #1d1d1f;" aria-label="Black"></button>
+          <button id="annotationUndoBtn" class="annotation-tool">Undo</button>
+          <button id="annotationClearBtn" class="annotation-tool">Clear</button>
+        </div>
+      ` : ""}
+
+      <section class="lesson-stage lesson-stage--immersive">
+        <div class="lesson-stage-shell" id="lessonStageShell">
+          ${vm.lessonStage.html}
+          <canvas id="annotationCanvas" class="annotation-canvas ${vm.annotation.mode ? "is-active" : ""}"></canvas>
+        </div>
+      </section>
+
+      <div id="behaviorBackdrop" class="lesson-overlay-backdrop ${vm.behaviorMenuOpen ? "is-visible" : ""}"></div>
+      <aside class="lesson-behavior-drawer shell-card ${vm.behaviorMenuOpen ? "is-open" : ""}">
+        <div class="lesson-drawer-header">
           <div>
-            <div class="eyebrow">Lesson mode</div>
-            <h1 style="margin: 10px 0 6px;">${escapeHtml(vm.currentHour)}</h1>
-            <p class="subhead" style="margin: 0;">${escapeHtml(vm.currentClass)}</p>
-            <p class="hint" style="margin-top: 10px;">${lessonLabel}</p>
+            <div class="eyebrow">Behavior log</div>
+            <h2>Track behavior without leaving the lesson</h2>
           </div>
-          <div class="toolbar-row">
-            <button id="backToHomeBtn" class="btn-ghost">Back</button>
-            <button id="prevLessonBtn" class="btn-ghost">Previous</button>
-            <button id="nextLessonBtn" class="btn">Next</button>
-            <button id="openLessonFileBtn" class="btn-ghost">Open file...</button>
-            <button id="coldCallBtn" class="btn-secondary">Cold call</button>
-          </div>
-        </div>
-      </section>
-
-      <section class="split-layout">
-        <div class="shell-card lesson-stage">
-          <div class="lesson-stage-shell" id="lessonStageShell">
-            <div class="annotation-toolbar ${vm.annotation.toolbarPosition === "bottom" ? "is-bottom" : ""}">
-              <button id="annotationModeBtn" class="annotation-tool ${vm.annotation.mode ? "is-active" : ""}">${vm.annotation.mode ? "Annotation ON" : "Annotation OFF"}</button>
-              <button id="annotationPositionBtn" class="annotation-tool">${vm.annotation.toolbarPosition === "bottom" ? "Toolbar Top" : "Toolbar Bottom"}</button>
-              <button id="annotationPenBtn" class="annotation-tool ${vm.annotation.tool === "pen" ? "is-active" : ""}">Pen</button>
-              <button id="annotationHighlighterBtn" class="annotation-tool ${vm.annotation.tool === "highlighter" ? "is-active" : ""}">HL</button>
-              <button id="annotationEraserBtn" class="annotation-tool ${vm.annotation.tool === "eraser" ? "is-active" : ""}">Eraser</button>
-              <button id="annotationRedBtn" class="annotation-swatch ${vm.annotation.color.toLowerCase() === "#ff3b30" ? "is-active" : ""}" style="background: #ff3b30;" aria-label="Red"></button>
-              <button id="annotationBlueBtn" class="annotation-swatch ${vm.annotation.color.toLowerCase() === "#007aff" ? "is-active" : ""}" style="background: #007aff;" aria-label="Blue"></button>
-              <button id="annotationBlackBtn" class="annotation-swatch ${vm.annotation.color.toLowerCase() === "#1d1d1f" ? "is-active" : ""}" style="background: #1d1d1f;" aria-label="Black"></button>
-              <button id="annotationUndoBtn" class="annotation-tool">Undo</button>
-              <button id="annotationClearBtn" class="annotation-tool">Clear</button>
-            </div>
-            ${vm.lessonStage.html}
-            <canvas id="annotationCanvas" class="annotation-canvas ${vm.annotation.mode ? "is-active" : ""}"></canvas>
-          </div>
+          <button id="closeBehaviorMenuBtn" class="lesson-action-btn lesson-action-btn--small" aria-label="Close behavior log" title="Close behavior log"><span class="lesson-icon">${renderIcon("close")}</span></button>
         </div>
 
-        <aside class="shell-card panel layout-grid">
-          <section class="panel">
-            <h2>Cold call</h2>
-            <p class="cold-call-name">${escapeHtml(vm.coldCallName || "Ready")}</p>
-            <p class="hint">Remaining before reset: ${vm.coldCallRemaining}</p>
-            <div class="btn-row" style="margin-top: 12px;">
-              <button id="coldCallSideBtn" class="btn-secondary">Pick student</button>
-            </div>
-          </section>
+        <section class="lesson-drawer-section">
+          <h3>Warnings</h3>
+          ${warningsHtml}
+        </section>
 
-          <section class="panel">
-            <h2>Warnings</h2>
-            ${warningsHtml}
-          </section>
+        <section class="lesson-drawer-section">
+          <h3>Behavior</h3>
+          <div class="behavior-grid lesson-behavior-grid">
+            ${behaviorChoices.map((choice) => `
+              <button
+                class="choice-btn ${vm.selectedBehavior && vm.selectedBehavior.type === choice.type && vm.selectedBehavior.category === choice.category ? "is-selected" : ""}"
+                data-kind="${choice.type}"
+                data-behavior-type="${choice.type}"
+                data-behavior-category="${escapeHtml(choice.category)}"
+                data-behavior-points="${choice.points}"
+              >${escapeHtml(choice.label)}</button>
+            `).join("")}
+          </div>
+          <div class="field-stack lesson-drawer-stack">
+            <label class="field">
+              <span class="label">Custom positive</span>
+              <input id="customPositiveInput" class="input" type="text" placeholder="Other positive" />
+            </label>
+            <label class="field">
+              <span class="label">Custom negative</span>
+              <input id="customNegativeInput" class="input" type="text" placeholder="Other negative" />
+            </label>
+          </div>
+          <div class="banner lesson-selection-banner">${selectedBehaviorLabel}</div>
+        </section>
 
-          <section class="panel">
-            <h2>Behavior</h2>
-            <div class="behavior-grid">
-              ${behaviorChoices.map((choice) => `
-                <button
-                  class="choice-btn ${vm.selectedBehavior && vm.selectedBehavior.type === choice.type && vm.selectedBehavior.category === choice.category ? "is-selected" : ""}"
-                  data-kind="${choice.type}"
-                  data-behavior-type="${choice.type}"
-                  data-behavior-category="${escapeHtml(choice.category)}"
-                  data-behavior-points="${choice.points}"
-                >${escapeHtml(choice.label)}</button>
-              `).join("")}
-            </div>
-            <div class="field-stack" style="margin-top: 14px;">
-              <label class="field">
-                <span class="label">Custom positive</span>
-                <input id="customPositiveInput" class="input" type="text" placeholder="Other positive" />
-              </label>
-              <label class="field">
-                <span class="label">Custom negative</span>
-                <input id="customNegativeInput" class="input" type="text" placeholder="Other negative" />
-              </label>
-            </div>
-            <div class="banner" style="margin-top: 14px;">${vm.selectedBehavior ? `Selected: ${escapeHtml(vm.selectedBehavior.category)}${vm.selectedBehavior.type === "negative" ? ` (${vm.selectedBehavior.points} points)` : ""}` : "Select a behavior, then click a student."}</div>
-            <div class="field-stack" style="margin-top: 14px;">
-              <label class="field">
-                <span class="label">Quick add student</span>
-                <input id="quickAddStudentInput" class="input" type="text" placeholder="Add a student to this hour" />
-              </label>
-              <button id="quickAddStudentBtn" class="btn-ghost">Quick add</button>
-            </div>
-            <div class="student-grid" style="margin-top: 14px;">
-              ${vm.roster.map((student) => `<button class="student-chip" data-student-name="${escapeHtml(student)}">${escapeHtml(student)}</button>`).join("")}
-            </div>
-          </section>
+        <section class="lesson-drawer-section">
+          <div class="lesson-drawer-subheader">
+            <h3>Students</h3>
+            <span class="hint">Tap a name to log the selected behavior.</span>
+          </div>
+          <div class="field-stack lesson-drawer-stack">
+            <label class="field">
+              <span class="label">Quick add student</span>
+              <input id="quickAddStudentInput" class="input" type="text" placeholder="Add a student to this hour" />
+            </label>
+            <button id="quickAddStudentBtn" class="btn-ghost">Quick add</button>
+          </div>
+          <div class="student-grid lesson-student-grid">
+            ${vm.roster.map((student) => `<button class="student-chip" data-student-name="${escapeHtml(student)}">${escapeHtml(student)}</button>`).join("")}
+          </div>
+        </section>
 
-          <section class="panel">
-            <h2>Today's log</h2>
-            <div class="log-list">${recentLogsHtml}</div>
-          </section>
-        </aside>
-      </section>
-
-      <section class="shell-card panel">
-        <div class="banner">Lesson rendering, annotation, behavior tools, and live file imports now run through separated controller and service layers so lesson mode can stay focused on teaching.</div>
-      </section>
+        <section class="lesson-drawer-section">
+          <h3>Today</h3>
+          <div class="log-list">${recentLogsHtml}</div>
+        </section>
+      </aside>
     </section>
   `;
 
@@ -2354,9 +2656,10 @@ function renderLessonScreen(container, vm, actions) {
   container.querySelector("#nextLessonBtn")?.addEventListener("click", () => actions.next(vm.lessonStage.slideCount));
   container.querySelector("#openLessonFileBtn")?.addEventListener("click", actions.openLessonFile);
   container.querySelector("#coldCallBtn")?.addEventListener("click", actions.coldCall);
-  container.querySelector("#coldCallSideBtn")?.addEventListener("click", actions.coldCall);
   container.querySelector("#annotationModeBtn")?.addEventListener("click", actions.toggleAnnotationMode);
-  container.querySelector("#annotationPositionBtn")?.addEventListener("click", actions.toggleAnnotationToolbarPosition);
+  container.querySelector("#toggleBehaviorMenuBtn")?.addEventListener("click", actions.toggleBehaviorMenu);
+  container.querySelector("#closeBehaviorMenuBtn")?.addEventListener("click", actions.closeBehaviorMenu);
+  container.querySelector("#behaviorBackdrop")?.addEventListener("click", actions.closeBehaviorMenu);
   container.querySelector("#annotationPenBtn")?.addEventListener("click", () => actions.setAnnotationTool("pen"));
   container.querySelector("#annotationHighlighterBtn")?.addEventListener("click", () => actions.setAnnotationTool("highlighter"));
   container.querySelector("#annotationEraserBtn")?.addEventListener("click", () => actions.setAnnotationTool("eraser"));
@@ -2550,6 +2853,7 @@ const state = {
   currentClass: "",
   lessonIndex: 0,
   markdownSlideIndex: 0,
+  behaviorMenuOpen: false,
   selectedBehavior: null,
   coldCallName: "",
   coldCallRemaining: [],
@@ -2921,6 +3225,7 @@ function render() {
         state.lessonRecords = records;
         state.lessonIndex = 0;
         state.markdownSlideIndex = 0;
+        state.behaviorMenuOpen = false;
         state.selectedBehavior = null;
         state.coldCallName = "";
         resetColdCallRotation();
@@ -3112,6 +3417,7 @@ function render() {
       lessonRecords: state.lessonRecords,
       lessonIndex: state.lessonIndex,
       markdownSlideIndex: state.markdownSlideIndex,
+      behaviorMenuOpen: state.behaviorMenuOpen,
       selectedBehavior: state.selectedBehavior,
       coldCallName: state.coldCallName,
       coldCallRemaining: state.coldCallRemaining.length,
@@ -3127,6 +3433,7 @@ function render() {
         state.lessonRecords = [];
         state.lessonIndex = 0;
         state.markdownSlideIndex = 0;
+        state.behaviorMenuOpen = false;
         state.selectedBehavior = null;
         render();
       },
@@ -3185,8 +3492,20 @@ function render() {
         state.coldCallName = student;
         render();
       },
+      toggleBehaviorMenu() {
+        state.behaviorMenuOpen = !state.behaviorMenuOpen;
+        render();
+      },
+      closeBehaviorMenu() {
+        if (!state.behaviorMenuOpen) {
+          return;
+        }
+        state.behaviorMenuOpen = false;
+        render();
+      },
       selectBehavior(selection) {
         state.selectedBehavior = resolveBehaviorSelection(selection);
+        state.behaviorMenuOpen = true;
         render();
       },
       logBehavior(studentName) {
