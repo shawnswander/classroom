@@ -382,7 +382,7 @@ button {
   position: absolute;
   inset: 0;
   min-height: 100vh;
-  padding: 88px 96px 20px 20px;
+  padding: 54px 92px 16px 16px;
   border-radius: 0;
   background: transparent;
   border: none;
@@ -644,8 +644,16 @@ button {
 
 .annotation-toolbar.is-fixed-top {
   position: fixed;
-  top: 82px;
+  top: 50px;
   left: 50%;
+  transform: translateX(-50%);
+  max-width: min(calc(100vw - 120px), 760px);
+}
+
+.annotation-toolbar.is-fixed-bottom {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
   transform: translateX(-50%);
   max-width: min(calc(100vw - 120px), 760px);
 }
@@ -666,6 +674,15 @@ button {
   border-radius: 999px;
   font-size: 13px;
   font-weight: 700;
+}
+
+.annotation-tool--icon {
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .annotation-tool.is-active {
@@ -699,16 +716,16 @@ button {
 
 .lesson-topbar {
   position: fixed;
-  top: 18px;
-  left: 20px;
-  right: 96px;
+  top: 0;
+  left: 0;
+  right: 82px;
   z-index: 12;
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 10px 16px 10px 10px;
-  border-radius: 999px;
-  background: rgba(255, 252, 246, 0.84);
+  gap: 10px;
+  padding: 4px 12px 4px 4px;
+  border-radius: 0 0 24px 0;
+  background: rgba(255, 252, 246, 0.94);
 }
 
 .lesson-topbar-meta {
@@ -725,14 +742,9 @@ button {
 .lesson-topbar-line {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   font-weight: 800;
-}
-
-.lesson-topbar-subline {
-  margin-top: 2px;
-  color: var(--muted);
-  font-size: 13px;
+  font-size: clamp(14px, 1.7vw, 18px);
 }
 
 .lesson-topbar-dot {
@@ -745,14 +757,14 @@ button {
 
 .lesson-action-rail {
   position: fixed;
-  top: 88px;
-  right: 18px;
+  top: 64px;
+  right: 12px;
   z-index: 13;
   display: grid;
-  gap: 10px;
-  padding: 12px 10px;
-  border-radius: 24px;
-  background: rgba(255, 252, 246, 0.88);
+  gap: 8px;
+  padding: 10px 8px;
+  border-radius: 22px;
+  background: rgba(255, 252, 246, 0.92);
 }
 
 .lesson-action-btn,
@@ -800,8 +812,8 @@ button {
 
 .lesson-cold-call-badge {
   position: fixed;
-  top: 88px;
-  right: 92px;
+  top: 64px;
+  right: 86px;
   z-index: 11;
   min-width: 220px;
   max-width: min(360px, calc(100vw - 140px));
@@ -891,11 +903,11 @@ button {
   }
 
   .lesson-topbar {
-    right: 82px;
+    right: 74px;
   }
 
   .lesson-stage--immersive {
-    padding-right: 84px;
+    padding-right: 78px;
   }
 }
 
@@ -911,9 +923,11 @@ button {
   }
 
   .lesson-topbar {
-    left: 12px;
-    right: 12px;
-    top: 12px;
+    left: 0;
+    right: 0;
+    top: 0;
+    padding-right: 12px;
+    border-radius: 0 0 18px 18px;
   }
 
   .lesson-action-rail {
@@ -927,16 +941,21 @@ button {
   }
 
   .lesson-stage--immersive {
-    padding: 84px 12px 86px;
+    padding: 54px 12px 86px;
   }
 
   .annotation-toolbar.is-fixed-top {
-    top: 86px;
+    top: 46px;
+    max-width: calc(100vw - 24px);
+  }
+
+  .annotation-toolbar.is-fixed-bottom {
+    bottom: 86px;
     max-width: calc(100vw - 24px);
   }
 
   .lesson-cold-call-badge {
-    top: 86px;
+    top: 56px;
     left: 12px;
     right: 12px;
     max-width: none;
@@ -2496,8 +2515,15 @@ function renderIcon(name) {
     previous: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"/></svg>',
     next: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"/></svg>',
     file: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l5 5v13H7z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"/><path d="M14 3v5h5" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="2"/></svg>',
-    coldCall: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 4 10 0 3 5-3 5 3 5H10L7 14l3-5z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.9"/></svg>',
+    coldCall: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="9" cy="9" r="1.2" fill="currentColor"/><circle cx="15" cy="9" r="1.2" fill="currentColor"/><circle cx="9" cy="15" r="1.2" fill="currentColor"/><circle cx="15" cy="15" r="1.2" fill="currentColor"/></svg>',
     annotate: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 20 4.5-1 9.7-9.7a1.8 1.8 0 0 0 0-2.6l-.9-.9a1.8 1.8 0 0 0-2.6 0L5 15.5 4 20Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.8"/><path d="m13 7 4 4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"/></svg>',
+    pen: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 20 4.5-1 9.7-9.7a1.8 1.8 0 0 0 0-2.6l-.9-.9a1.8 1.8 0 0 0-2.6 0L5 15.5 4 20Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.8"/></svg>',
+    highlighter: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 15 6-6 4 4-6 6H7z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.8"/><path d="M14 8 16 6l2 2-2 2" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.8"/><path d="M6 18h6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"/></svg>',
+    eraser: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 7 7.5 7.5-4 4H7.5l-3-3 7-8.5Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.8"/><path d="M13.5 18H20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"/></svg>',
+    undo: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 8H5v-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9"/><path d="M5 8c1.8-2.3 4.2-3.5 7.3-3.5 4.5 0 7.7 3 7.7 7.3 0 4.2-3 7.2-7.2 7.2-2 0-3.7-.6-5.2-1.8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9"/></svg>',
+    clear: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.9"/><path d="M9 7V5h6v2" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9"/><path d="M8 7l1 11h6l1-11" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.9"/></svg>',
+    moveUp: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 6-5 5m5-5 5 5M12 6v12" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9"/></svg>',
+    moveDown: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 18-5-5m5 5 5-5M12 18V6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9"/></svg>',
     log: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2.2"/></svg>',
     close: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"/></svg>'
   };
@@ -2509,6 +2535,7 @@ function renderLessonScreen(container, vm, actions) {
   const lessonLabel = currentRecord
     ? `Lesson ${vm.lessonIndex + 1} of ${vm.lessonRecords.length} - ${escapeHtml(currentRecord.name)}`
     : "No lesson selected";
+  const topBarLabel = `${escapeHtml(vm.currentHour)}<span class="lesson-topbar-dot"></span>${escapeHtml(vm.currentClass)}<span class="lesson-topbar-dot"></span>${lessonLabel}`;
 
   const warningsHtml = vm.warningCategories.length
     ? `<div class="warning-row">${vm.warningCategories.map((category) => `<div class="warning-chip">${escapeHtml(category)} warning active (+1 severity)</div>`).join("")}</div>`
@@ -2543,8 +2570,7 @@ function renderLessonScreen(container, vm, actions) {
           <span class="lesson-icon">${renderIcon("back")}</span>
         </button>
         <div class="lesson-topbar-meta">
-          <div class="lesson-topbar-line">${escapeHtml(vm.currentHour)}<span class="lesson-topbar-dot"></span>${escapeHtml(vm.currentClass)}</div>
-          <div class="lesson-topbar-subline">${lessonLabel}</div>
+          <div class="lesson-topbar-line">${topBarLabel}</div>
         </div>
       </header>
 
@@ -2566,15 +2592,16 @@ function renderLessonScreen(container, vm, actions) {
       ` : ""}
 
       ${vm.annotation.mode ? `
-        <div class="annotation-toolbar is-fixed-top">
-          <button id="annotationPenBtn" class="annotation-tool ${vm.annotation.tool === "pen" ? "is-active" : ""}">Pen</button>
-          <button id="annotationHighlighterBtn" class="annotation-tool ${vm.annotation.tool === "highlighter" ? "is-active" : ""}">HL</button>
-          <button id="annotationEraserBtn" class="annotation-tool ${vm.annotation.tool === "eraser" ? "is-active" : ""}">Eraser</button>
+        <div class="annotation-toolbar ${vm.annotation.toolbarPosition === "bottom" ? "is-fixed-bottom" : "is-fixed-top"}">
+          <button id="annotationPenBtn" class="annotation-tool annotation-tool--icon ${vm.annotation.tool === "pen" ? "is-active" : ""}" aria-label="Pen" title="Pen"><span class="lesson-icon">${renderIcon("pen")}</span></button>
+          <button id="annotationHighlighterBtn" class="annotation-tool annotation-tool--icon ${vm.annotation.tool === "highlighter" ? "is-active" : ""}" aria-label="Highlighter" title="Highlighter"><span class="lesson-icon">${renderIcon("highlighter")}</span></button>
+          <button id="annotationEraserBtn" class="annotation-tool annotation-tool--icon ${vm.annotation.tool === "eraser" ? "is-active" : ""}" aria-label="Eraser" title="Eraser"><span class="lesson-icon">${renderIcon("eraser")}</span></button>
           <button id="annotationRedBtn" class="annotation-swatch ${vm.annotation.color.toLowerCase() === "#ff3b30" ? "is-active" : ""}" style="background: #ff3b30;" aria-label="Red"></button>
           <button id="annotationBlueBtn" class="annotation-swatch ${vm.annotation.color.toLowerCase() === "#007aff" ? "is-active" : ""}" style="background: #007aff;" aria-label="Blue"></button>
           <button id="annotationBlackBtn" class="annotation-swatch ${vm.annotation.color.toLowerCase() === "#1d1d1f" ? "is-active" : ""}" style="background: #1d1d1f;" aria-label="Black"></button>
-          <button id="annotationUndoBtn" class="annotation-tool">Undo</button>
-          <button id="annotationClearBtn" class="annotation-tool">Clear</button>
+          <button id="annotationUndoBtn" class="annotation-tool annotation-tool--icon" aria-label="Undo" title="Undo"><span class="lesson-icon">${renderIcon("undo")}</span></button>
+          <button id="annotationClearBtn" class="annotation-tool annotation-tool--icon" aria-label="Clear annotations" title="Clear annotations"><span class="lesson-icon">${renderIcon("clear")}</span></button>
+          <button id="annotationPositionBtn" class="annotation-tool annotation-tool--icon" aria-label="${vm.annotation.toolbarPosition === "bottom" ? "Move toolbar up" : "Move toolbar down"}" title="${vm.annotation.toolbarPosition === "bottom" ? "Move toolbar up" : "Move toolbar down"}"><span class="lesson-icon">${renderIcon(vm.annotation.toolbarPosition === "bottom" ? "moveUp" : "moveDown")}</span></button>
         </div>
       ` : ""}
 
@@ -2668,6 +2695,7 @@ function renderLessonScreen(container, vm, actions) {
   container.querySelector("#annotationBlackBtn")?.addEventListener("click", () => actions.setAnnotationColor("#1d1d1f"));
   container.querySelector("#annotationUndoBtn")?.addEventListener("click", actions.undoAnnotation);
   container.querySelector("#annotationClearBtn")?.addEventListener("click", actions.clearAnnotations);
+  container.querySelector("#annotationPositionBtn")?.addEventListener("click", actions.toggleAnnotationToolbarPosition);
   container.querySelectorAll("[data-behavior-type]").forEach((button) => {
     button.addEventListener("click", () => actions.selectBehavior({
       type: button.dataset.behaviorType,
