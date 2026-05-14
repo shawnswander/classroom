@@ -1,0 +1,3396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lesson Cockpit</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <style>
+:root {
+  color-scheme: light;
+  --bg: #f2efe7;
+  --bg-strong: #efe6d6;
+  --panel: rgba(255, 252, 246, 0.84);
+  --panel-strong: #fffaf2;
+  --panel-border: rgba(97, 74, 40, 0.14);
+  --ink: #1f1b16;
+  --muted: #675f54;
+  --accent: #bb5a2c;
+  --accent-strong: #9c441a;
+  --accent-soft: rgba(187, 90, 44, 0.12);
+  --success: #2e8b57;
+  --danger: #c14532;
+  --shadow: 0 20px 60px rgba(56, 39, 17, 0.12);
+  --radius-lg: 28px;
+  --radius-md: 18px;
+  --radius-sm: 12px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: "Trebuchet MS", "Gill Sans", sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at top left, rgba(255, 225, 180, 0.55), transparent 34%),
+    radial-gradient(circle at bottom right, rgba(187, 90, 44, 0.18), transparent 28%),
+    linear-gradient(180deg, #f6f1e8 0%, #efe5d3 100%);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.app-shell {
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.screen-root {
+  min-height: calc(100vh - 48px);
+}
+
+.screen {
+  width: min(1280px, 100%);
+  margin: 0 auto;
+}
+
+.shell-card {
+  background: var(--panel);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+.screen-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid rgba(97, 74, 40, 0.12);
+  color: var(--muted);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.headline {
+  margin: 12px 0 10px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(36px, 6vw, 72px);
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+}
+
+.subhead {
+  max-width: 760px;
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.btn-row,
+.stack-row,
+.toolbar-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.btn,
+.btn-secondary,
+.btn-danger,
+.btn-ghost {
+  appearance: none;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 18px;
+  font-weight: 700;
+  transition: transform 0.18s ease, opacity 0.18s ease, background 0.18s ease;
+}
+
+.btn:hover,
+.btn-secondary:hover,
+.btn-danger:hover,
+.btn-ghost:hover {
+  transform: translateY(-1px);
+}
+
+.btn {
+  background: var(--accent);
+  color: #fff9f3;
+}
+
+.btn-secondary {
+  background: #264653;
+  color: #f9fbfc;
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: #fff7f5;
+}
+
+.btn-ghost {
+  background: rgba(255, 255, 255, 0.58);
+  color: var(--ink);
+  border: 1px solid var(--panel-border);
+}
+
+.layout-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(280px, 0.9fr);
+  gap: 18px;
+  align-items: stretch;
+}
+
+.panel {
+  padding: 24px;
+  border-radius: var(--radius-md);
+  background: var(--panel-strong);
+  border: 1px solid var(--panel-border);
+}
+
+.panel h2,
+.panel h3 {
+  margin-top: 0;
+}
+
+.callout {
+  padding: 18px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(255, 247, 233, 0.96), rgba(255, 235, 211, 0.96));
+  border: 1px solid rgba(187, 90, 44, 0.18);
+}
+
+.hour-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.hour-card {
+  padding: 18px;
+  border-radius: 24px;
+  border: 1px solid rgba(97, 74, 40, 0.12);
+  background: rgba(255, 253, 248, 0.92);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 180px;
+}
+
+.hour-card[data-has-lessons="true"] {
+  background: linear-gradient(160deg, rgba(255, 251, 244, 0.95), rgba(255, 236, 214, 0.95));
+  border-color: rgba(187, 90, 44, 0.22);
+}
+
+.hour-card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.hour-card h3 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.hour-card p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.status-pill--ready {
+  background: rgba(46, 139, 87, 0.12);
+  color: var(--success);
+}
+
+.status-pill--empty {
+  background: rgba(103, 95, 84, 0.11);
+  color: var(--muted);
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.metric {
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(97, 74, 40, 0.1);
+}
+
+.metric-value {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.metric-label {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.field,
+.field-stack {
+  display: grid;
+  gap: 8px;
+}
+
+.field-stack {
+  gap: 14px;
+}
+
+.label {
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.input,
+.textarea,
+.select {
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid rgba(97, 74, 40, 0.18);
+  padding: 12px 14px;
+  background: #fffdfa;
+  color: var(--ink);
+}
+
+.textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+.mapping-grid,
+.lesson-list,
+.roster-list {
+  display: grid;
+  gap: 10px;
+}
+
+.mapping-row,
+.lesson-row {
+  display: grid;
+  grid-template-columns: minmax(130px, 180px) minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+
+.lesson-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(97, 74, 40, 0.1);
+}
+
+.lesson-meta {
+  display: grid;
+  gap: 4px;
+}
+
+.hint,
+.muted-text {
+  color: var(--muted);
+}
+
+.hint {
+  font-size: 13px;
+}
+
+.split-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  gap: 18px;
+}
+
+.lesson-screen {
+  display: grid;
+  gap: 18px;
+}
+
+.lesson-stage {
+  min-height: 68vh;
+  padding: 18px;
+  border-radius: 24px;
+  background: rgba(248, 244, 238, 0.94);
+  border: 1px solid rgba(97, 74, 40, 0.12);
+}
+
+.lesson-stage-shell {
+  position: relative;
+  min-height: 62vh;
+}
+
+.lesson-frame {
+  width: 100%;
+  min-height: 62vh;
+  border: none;
+  border-radius: 18px;
+  background: white;
+}
+
+.pdf-stage {
+  min-height: 62vh;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  padding: 8px;
+  background: #f4efe8;
+  border-radius: 18px;
+}
+
+.pdf-page-canvas {
+  display: block;
+  width: min(100%, 1040px);
+  height: auto;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 10px 28px rgba(56, 39, 17, 0.12);
+}
+
+.pdf-status {
+  width: min(100%, 740px);
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(97, 74, 40, 0.12);
+  color: var(--muted);
+}
+
+.markdown-stage {
+  background: white;
+  border-radius: 18px;
+  padding: clamp(20px, 4vw, 48px);
+  min-height: 62vh;
+  overflow: auto;
+  line-height: 1.6;
+  font-size: clamp(18px, 2vw, 28px);
+}
+
+.markdown-stage h1,
+.markdown-stage h2,
+.markdown-stage h3 {
+  font-family: Georgia, "Times New Roman", serif;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.markdown-stage blockquote {
+  margin-left: 0;
+  padding-left: 14px;
+  border-left: 4px solid var(--accent);
+  color: var(--muted);
+}
+
+.markdown-stage code {
+  font-family: Consolas, "Courier New", monospace;
+  background: #f2ede6;
+  border-radius: 6px;
+  padding: 0.1em 0.32em;
+}
+
+.markdown-stage pre code {
+  display: block;
+  padding: 14px;
+  overflow: auto;
+}
+
+.markdown-stage table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.markdown-stage th,
+.markdown-stage td {
+  border: 1px solid rgba(97, 74, 40, 0.14);
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.banner {
+  padding: 14px 16px;
+  border-radius: 14px;
+  font-weight: 600;
+  background: rgba(38, 70, 83, 0.08);
+  color: #264653;
+}
+
+.behavior-grid,
+.student-grid,
+.report-grid,
+.log-list,
+.warning-row {
+  display: grid;
+  gap: 10px;
+}
+
+.behavior-grid,
+.student-grid {
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.choice-btn,
+.student-chip,
+.warning-chip,
+.report-row {
+  border-radius: 16px;
+  border: 1px solid rgba(97, 74, 40, 0.14);
+  background: rgba(255, 255, 255, 0.75);
+}
+
+.choice-btn,
+.student-chip {
+  padding: 12px 14px;
+  font-weight: 700;
+}
+
+.choice-btn[data-kind="positive"] {
+  background: rgba(46, 139, 87, 0.1);
+  color: var(--success);
+}
+
+.choice-btn[data-kind="negative"] {
+  background: rgba(193, 69, 50, 0.1);
+  color: var(--danger);
+}
+
+.choice-btn.is-selected {
+  box-shadow: inset 0 0 0 2px rgba(38, 70, 83, 0.3);
+}
+
+.warning-row {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.warning-chip {
+  padding: 10px 12px;
+  font-weight: 700;
+  color: #8a4b08;
+  background: rgba(255, 180, 70, 0.18);
+}
+
+.log-entry {
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(97, 74, 40, 0.1);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.log-entry strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.report-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.report-row {
+  display: grid;
+  grid-template-columns: 180px minmax(120px, 160px) minmax(120px, 140px) minmax(140px, 1fr) 110px;
+  gap: 12px;
+  padding: 12px 14px;
+  align-items: center;
+}
+
+.report-chip {
+  display: inline-flex;
+  justify-content: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.report-chip--positive {
+  color: var(--success);
+  background: rgba(46, 139, 87, 0.12);
+}
+
+.report-chip--negative {
+  color: var(--danger);
+  background: rgba(193, 69, 50, 0.12);
+}
+
+.cold-call-name {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(28px, 4vw, 46px);
+  letter-spacing: -0.04em;
+  margin: 0;
+}
+
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.annotation-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  touch-action: none;
+  z-index: 4;
+}
+
+.annotation-canvas.is-active {
+  pointer-events: auto;
+  cursor: crosshair;
+}
+
+.annotation-toolbar {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  max-width: calc(100% - 24px);
+  padding: 10px;
+  border-radius: 18px;
+  background: rgba(255, 252, 246, 0.78);
+  border: 1px solid rgba(97, 74, 40, 0.14);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 28px rgba(56, 39, 17, 0.12);
+}
+
+.annotation-toolbar.is-bottom {
+  top: auto;
+  bottom: 12px;
+}
+
+.annotation-tool,
+.annotation-swatch {
+  border: 1px solid rgba(97, 74, 40, 0.16);
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.annotation-tool {
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.annotation-tool.is-active {
+  background: var(--accent);
+  color: #fffaf2;
+  border-color: var(--accent);
+}
+
+.annotation-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  padding: 0;
+}
+
+.annotation-swatch.is-active {
+  box-shadow: 0 0 0 2px rgba(38, 70, 83, 0.25);
+}
+
+.empty-state {
+  padding: 24px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.56);
+  border: 1px dashed rgba(97, 74, 40, 0.22);
+  color: var(--muted);
+}
+
+.hidden {
+  display: none !important;
+}
+
+@media (max-width: 980px) {
+  .hero-grid,
+  .split-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .app-shell {
+    padding: 14px;
+  }
+
+  .mapping-row,
+  .lesson-row,
+  .report-row {
+    grid-template-columns: 1fr;
+  }
+}
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <main id="appRoot" class="screen-root" aria-live="polite"></main>
+  </div>
+
+  <input id="lessonFileInput" type="file" accept=".pdf,.md,.docx,text/markdown,text/plain,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" multiple hidden />
+  <input id="positiveSoundInput" type="file" accept="audio/*" hidden />
+
+  <script src="https://cdn.jsdelivr.net/npm/marked@13.0.3/marked.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
+  <script type="module">
+import * as pdfjsLib from "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.mjs";
+pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs";
+
+// src/config/constants.js
+const { hourLabels, defaultClassOptions, defaultClassRosters, storageKeys, lessonDbConfig } = (() => {
+const hourLabels = [
+  "1st Hour",
+  "2nd Hour",
+  "3rd Hour",
+  "4th Hour",
+  "5th Hour",
+  "6th Hour",
+  "7th Hour",
+  "8th Hour"
+];
+
+const defaultClassOptions = [
+  "Physical Science",
+  "Physics",
+  "AP Physics",
+  "Photography",
+  "AP Computer Science Principles"
+];
+
+const defaultClassRosters = {
+  "Physical Science": ["Alice", "Bob", "Charlie", "Diana", "Eve", "Frank", "Grace", "Henry", "Iris", "Jack", "Kate", "Liam", "Mia", "Noah", "Olivia"],
+  "Physics": ["Aaron", "Bella", "Carlos", "Dana", "Ethan", "Fiona", "George", "Hannah", "Isaac", "Julia", "Kevin", "Laura", "Marcus", "Natalie", "Oscar"],
+  "AP Physics": ["Andrew", "Briana", "Cristian", "Dakota", "Evan", "Faye", "Gabriel", "Hailey", "Ivan", "Jessica", "Kyle", "Lily", "Mason", "Nora", "Oliver"],
+  Photography: ["Adrian", "Bridget", "Connor", "Danielle", "Etienne", "Francesca", "Gregory", "Heidi", "Ignacio", "Jenna", "Kai", "Lucia", "Miguel", "Nina", "Pablo"],
+  "AP Computer Science Principles": ["Ava", "Benjamin", "Camille", "Derek", "Elena", "Felix", "Gina", "Hugo", "Iris", "Jasper", "Kendra", "Leo", "Maya", "Nolan", "Piper"]
+};
+
+const storageKeys = {
+  classOptions: "classOptions",
+  hourToClassMapping: "hourToClassMapping",
+  hourRosters: "lessonCockpitHourRosters",
+  assignedClasses: "lessonCockpitAssigned",
+  positiveSound: "lessonCockpitPositiveSoundDataUrl",
+  logs: "lessonCockpitLogs",
+  session: "lessonCockpitSession"
+};
+
+const lessonDbConfig = {
+  name: "lessonCockpitDB",
+  version: 2,
+  legacyStoreName: "pdfs",
+  lessonStoreName: "pdfEntries"
+};
+return { hourLabels, defaultClassOptions, defaultClassRosters, storageKeys, lessonDbConfig };
+})();
+
+// src/storage/settings-store.js
+const { SettingsStore } = (() => {
+function readJson(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch (error) {
+    return fallback;
+  }
+}
+
+function writeJson(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+class SettingsStore {
+  loadClassOptions() {
+    const value = readJson(storageKeys.classOptions, null);
+    return Array.isArray(value) && value.length ? value : [...defaultClassOptions];
+  }
+
+  saveClassOptions(classOptions) {
+    writeJson(storageKeys.classOptions, classOptions);
+  }
+
+  loadHourMappings() {
+    return readJson(storageKeys.hourToClassMapping, {});
+  }
+
+  saveHourMappings(mappings) {
+    writeJson(storageKeys.hourToClassMapping, mappings);
+  }
+
+  loadHourRosters(hourMappings) {
+    const legacyRosters = readJson("classRosters", defaultClassRosters);
+    const rosters = readJson(storageKeys.hourRosters, null);
+    const normalized = rosters && typeof rosters === "object" ? { ...rosters } : {};
+
+    hourLabels.forEach((hour) => {
+      if (!Array.isArray(normalized[hour])) {
+        const mappedClass = hourMappings[hour];
+        normalized[hour] = mappedClass && Array.isArray(legacyRosters[mappedClass])
+          ? [...legacyRosters[mappedClass]]
+          : [];
+      }
+    });
+
+    writeJson(storageKeys.hourRosters, normalized);
+    return normalized;
+  }
+
+  saveHourRosters(rosters) {
+    writeJson(storageKeys.hourRosters, rosters);
+  }
+
+  loadAssignedClasses() {
+    const assigned = readJson(storageKeys.assignedClasses, []);
+    return Array.isArray(assigned) ? assigned : [];
+  }
+
+  saveAssignedClasses(classNames) {
+    writeJson(storageKeys.assignedClasses, classNames);
+  }
+
+  loadPositiveSound() {
+    return localStorage.getItem(storageKeys.positiveSound) || "";
+  }
+
+  savePositiveSound(dataUrl) {
+    localStorage.setItem(storageKeys.positiveSound, dataUrl);
+  }
+
+  clearPositiveSound() {
+    localStorage.removeItem(storageKeys.positiveSound);
+  }
+
+  loadBehaviorLogs() {
+    const logs = readJson(storageKeys.logs, []);
+    return Array.isArray(logs) ? logs : [];
+  }
+
+  saveBehaviorLogs(logs) {
+    writeJson(storageKeys.logs, logs);
+  }
+
+  clearBehaviorLogs() {
+    localStorage.removeItem(storageKeys.logs);
+  }
+
+  loadSession() {
+    return readJson(storageKeys.session, null);
+  }
+
+  saveSession(session) {
+    writeJson(storageKeys.session, session);
+  }
+
+  clearSession() {
+    localStorage.removeItem(storageKeys.session);
+  }
+}
+return { SettingsStore };
+})();
+
+// src/storage/lesson-db.js
+const { LessonDatabase } = (() => {
+function requestToPromise(request) {
+  return new Promise((resolve, reject) => {
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error || new Error("IndexedDB request failed"));
+  });
+}
+
+function txDone(transaction) {
+  return new Promise((resolve, reject) => {
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () => reject(transaction.error || new Error("IndexedDB transaction failed"));
+    transaction.onabort = () => reject(transaction.error || new Error("IndexedDB transaction aborted"));
+  });
+}
+
+class LessonDatabase {
+  constructor() {
+    this.db = null;
+  }
+
+  async init() {
+    if (this.db) {
+      return this.db;
+    }
+
+    this.db = await new Promise((resolve, reject) => {
+      const request = indexedDB.open(lessonDbConfig.name, lessonDbConfig.version);
+      request.onupgradeneeded = (event) => {
+        const db = event.target.result;
+
+        if (!db.objectStoreNames.contains(lessonDbConfig.legacyStoreName)) {
+          db.createObjectStore(lessonDbConfig.legacyStoreName);
+        }
+
+        if (!db.objectStoreNames.contains(lessonDbConfig.lessonStoreName)) {
+          const store = db.createObjectStore(lessonDbConfig.lessonStoreName, { keyPath: "id", autoIncrement: true });
+          store.createIndex("className", "className", { unique: false });
+        }
+
+        if (event.oldVersion < 2) {
+          const transaction = event.target.transaction;
+          if (!transaction) {
+            return;
+          }
+
+          const legacyStore = transaction.objectStore(lessonDbConfig.legacyStoreName);
+          const lessonStore = transaction.objectStore(lessonDbConfig.lessonStoreName);
+          legacyStore.openCursor().onsuccess = (cursorEvent) => {
+            const cursor = cursorEvent.target.result;
+            if (!cursor) {
+              return;
+            }
+
+            if (cursor.key && cursor.value) {
+              lessonStore.add({
+                className: String(cursor.key),
+                type: "pdf",
+                name: cursor.value.name || `${String(cursor.key)} Lesson.pdf`,
+                content: null,
+                blob: cursor.value,
+                addedAt: Date.now(),
+                orderIndex: Number.MAX_SAFE_INTEGER
+              });
+            }
+
+            cursor.continue();
+          };
+        }
+      };
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error || new Error("Unable to open lesson database"));
+    });
+
+    return this.db;
+  }
+
+  getStore(storeName, mode = "readonly") {
+    if (!this.db) {
+      throw new Error("Lesson database is not initialized");
+    }
+    return this.db.transaction(storeName, mode).objectStore(storeName);
+  }
+
+  sortRecords(records) {
+    return records.slice().sort((left, right) => {
+      const leftOrder = Number.isFinite(Number(left.orderIndex)) ? Number(left.orderIndex) : Number.MAX_SAFE_INTEGER;
+      const rightOrder = Number.isFinite(Number(right.orderIndex)) ? Number(right.orderIndex) : Number.MAX_SAFE_INTEGER;
+      if (leftOrder !== rightOrder) {
+        return leftOrder - rightOrder;
+      }
+
+      const leftTime = Number(left.addedAt || 0);
+      const rightTime = Number(right.addedAt || 0);
+      if (leftTime !== rightTime) {
+        return leftTime - rightTime;
+      }
+
+      return Number(left.id || 0) - Number(right.id || 0);
+    });
+  }
+
+  async getClassLessonRecords(className) {
+    if (!className) {
+      return [];
+    }
+
+    const store = this.getStore(lessonDbConfig.lessonStoreName);
+    const index = store.index("className");
+    const records = await requestToPromise(index.getAll(className));
+    return this.sortRecords(records || []);
+  }
+
+  async getClassLessonCounts() {
+    const transaction = this.db.transaction(lessonDbConfig.lessonStoreName, "readonly");
+    const store = transaction.objectStore(lessonDbConfig.lessonStoreName);
+    const counts = {};
+
+    store.openCursor().onsuccess = (event) => {
+      const cursor = event.target.result;
+      if (!cursor) {
+        return;
+      }
+
+      const className = String(cursor.value?.className || "").trim();
+      if (className) {
+        counts[className] = (counts[className] || 0) + 1;
+      }
+      cursor.continue();
+    };
+
+    await txDone(transaction);
+    return counts;
+  }
+
+  async addPdfFiles(className, files) {
+    const transaction = this.db.transaction([lessonDbConfig.lessonStoreName, lessonDbConfig.legacyStoreName], "readwrite");
+    const store = transaction.objectStore(lessonDbConfig.lessonStoreName);
+    const legacyStore = transaction.objectStore(lessonDbConfig.legacyStoreName);
+    const now = Date.now();
+
+    files.forEach((file, index) => {
+      store.add({
+        className,
+        type: "pdf",
+        name: file.name || `${className} Lesson.pdf`,
+        content: null,
+        blob: file,
+        addedAt: now + index,
+        orderIndex: Number.MAX_SAFE_INTEGER
+      });
+    });
+
+    legacyStore.delete(className);
+    await txDone(transaction);
+  }
+
+  async addMarkdownEntries(className, entries) {
+    const transaction = this.db.transaction(lessonDbConfig.lessonStoreName, "readwrite");
+    const store = transaction.objectStore(lessonDbConfig.lessonStoreName);
+    const now = Date.now();
+
+    entries.forEach((entry, index) => {
+      store.add({
+        className,
+        type: "markdown",
+        name: entry.name,
+        content: entry.content,
+        addedAt: now + index,
+        orderIndex: Number.MAX_SAFE_INTEGER
+      });
+    });
+
+    await txDone(transaction);
+  }
+
+  async addHtmlEntries(className, entries, type = "html") {
+    const transaction = this.db.transaction(lessonDbConfig.lessonStoreName, "readwrite");
+    const store = transaction.objectStore(lessonDbConfig.lessonStoreName);
+    const now = Date.now();
+
+    entries.forEach((entry, index) => {
+      store.add({
+        className,
+        type,
+        name: entry.name,
+        content: entry.content,
+        addedAt: now + index,
+        orderIndex: Number.MAX_SAFE_INTEGER
+      });
+    });
+
+    await txDone(transaction);
+  }
+
+  async reorderClassLessons(className, orderedIds) {
+    const records = await this.getClassLessonRecords(className);
+    const byId = new Map(records.map((record) => [Number(record.id), record]));
+    const transaction = this.db.transaction(lessonDbConfig.lessonStoreName, "readwrite");
+    const store = transaction.objectStore(lessonDbConfig.lessonStoreName);
+
+    orderedIds.forEach((id, index) => {
+      const record = byId.get(Number(id));
+      if (!record) {
+        return;
+      }
+      store.put({ ...record, orderIndex: index });
+    });
+
+    await txDone(transaction);
+  }
+
+  async clearClassLessons(className) {
+    const transaction = this.db.transaction([lessonDbConfig.lessonStoreName, lessonDbConfig.legacyStoreName], "readwrite");
+    const store = transaction.objectStore(lessonDbConfig.lessonStoreName);
+    const index = store.index("className");
+
+    index.openCursor(IDBKeyRange.only(className)).onsuccess = (event) => {
+      const cursor = event.target.result;
+      if (!cursor) {
+        return;
+      }
+      cursor.delete();
+      cursor.continue();
+    };
+
+    transaction.objectStore(lessonDbConfig.legacyStoreName).delete(className);
+    await txDone(transaction);
+  }
+
+  async clearAllLessons() {
+    const transaction = this.db.transaction([lessonDbConfig.lessonStoreName, lessonDbConfig.legacyStoreName], "readwrite");
+    transaction.objectStore(lessonDbConfig.lessonStoreName).clear();
+    transaction.objectStore(lessonDbConfig.legacyStoreName).clear();
+    await txDone(transaction);
+  }
+}
+return { LessonDatabase };
+})();
+
+// src/services/app-model.js
+const { AppModel } = (() => {
+class AppModel {
+  constructor({ settingsStore, lessonDb }) {
+    this.settingsStore = settingsStore;
+    this.lessonDb = lessonDb;
+    this.classOptions = [];
+    this.hourMappings = {};
+    this.hourRosters = {};
+    this.lessonCounts = {};
+    this.assignedClasses = [];
+  }
+
+  async hydrate() {
+    this.classOptions = this.settingsStore.loadClassOptions();
+    this.hourMappings = this.settingsStore.loadHourMappings();
+    this.hourRosters = this.settingsStore.loadHourRosters(this.hourMappings);
+    await this.refreshLessonMetadata();
+  }
+
+  async refreshLessonMetadata() {
+    this.lessonCounts = await this.lessonDb.getClassLessonCounts();
+    this.assignedClasses = Object.keys(this.lessonCounts).sort((left, right) => left.localeCompare(right));
+    this.settingsStore.saveAssignedClasses(this.assignedClasses);
+  }
+
+  needsSetup() {
+    return Object.keys(this.hourMappings).length === 0;
+  }
+
+  getHoursViewModel() {
+    return hourLabels
+      .map((hour) => {
+        const className = this.hourMappings[hour] || "";
+        const lessonCount = className ? this.lessonCounts[className] || 0 : 0;
+        const rosterCount = Array.isArray(this.hourRosters[hour]) ? this.hourRosters[hour].length : 0;
+        return {
+          hour,
+          className,
+          lessonCount,
+          hasLessons: lessonCount > 0,
+          rosterCount,
+          hasRoster: rosterCount > 0
+        };
+      })
+      .filter((entry) => entry.className);
+  }
+
+  getMetrics() {
+    const mappedHours = hourLabels.filter((hour) => !!this.hourMappings[hour]).length;
+    const totalLessons = Object.values(this.lessonCounts).reduce((sum, count) => sum + count, 0);
+    return {
+      mappedHours,
+      storedClasses: this.assignedClasses.length,
+      totalLessons
+    };
+  }
+
+  parseClassList(text) {
+    const nextOptions = Array.from(new Set(
+      String(text || "")
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter(Boolean)
+    ));
+    return nextOptions;
+  }
+
+  saveClassList(text) {
+    const nextOptions = this.parseClassList(text);
+    if (!nextOptions.length) {
+      throw new Error("Enter at least one class name.");
+    }
+
+    this.classOptions = nextOptions;
+    Object.keys(this.hourMappings).forEach((hour) => {
+      if (!this.classOptions.includes(this.hourMappings[hour])) {
+        this.hourMappings[hour] = "";
+      }
+    });
+
+    this.settingsStore.saveClassOptions(this.classOptions);
+    this.settingsStore.saveHourMappings(this.hourMappings);
+    this.settingsStore.saveHourRosters(this.hourRosters);
+    return this.classOptions;
+  }
+
+  setHourMapping(hour, className) {
+    this.hourMappings[hour] = className;
+    if (!Array.isArray(this.hourRosters[hour])) {
+      this.hourRosters[hour] = [];
+    }
+    this.settingsStore.saveHourMappings(this.hourMappings);
+    this.settingsStore.saveHourRosters(this.hourRosters);
+  }
+
+  getRoster(hour) {
+    return Array.isArray(this.hourRosters[hour]) ? this.hourRosters[hour] : [];
+  }
+
+  saveRoster(hour, text) {
+    const roster = String(text || "")
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean);
+
+    this.hourRosters[hour] = roster;
+    this.settingsStore.saveHourRosters(this.hourRosters);
+    return roster;
+  }
+
+  async addPdfFiles(className, files) {
+    await this.lessonDb.addPdfFiles(className, files);
+    await this.refreshLessonMetadata();
+  }
+
+  async convertDocxFiles(className, files) {
+    const mammoth = window.mammoth;
+    if (!mammoth || typeof mammoth.convertToHtml !== "function") {
+      throw new Error("DOCX import is not available right now.");
+    }
+
+    const entries = [];
+    for (const file of files) {
+      const arrayBuffer = await file.arrayBuffer();
+      const result = await mammoth.convertToHtml({ arrayBuffer });
+      entries.push({
+        name: file.name || `${className} Lesson.docx`,
+        content: result.value || ""
+      });
+    }
+
+    return entries;
+  }
+
+  classifyLessonFiles(files) {
+    const pdfFiles = [];
+    const markdownFiles = [];
+    const docxFiles = [];
+    const unsupportedFiles = [];
+
+    files.forEach((file) => {
+      const lowerName = String(file.name || "").toLowerCase();
+      if (file.type === "application/pdf" || lowerName.endsWith(".pdf")) {
+        pdfFiles.push(file);
+        return;
+      }
+      if (file.type === "text/markdown" || file.type === "text/plain" || lowerName.endsWith(".md")) {
+        markdownFiles.push(file);
+        return;
+      }
+      if (file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || lowerName.endsWith(".docx")) {
+        docxFiles.push(file);
+        return;
+      }
+      unsupportedFiles.push(file);
+    });
+
+    return { pdfFiles, markdownFiles, docxFiles, unsupportedFiles };
+  }
+
+  async addLessonFiles(className, files) {
+    const { pdfFiles, markdownFiles, docxFiles, unsupportedFiles } = this.classifyLessonFiles(files);
+
+    if (pdfFiles.length) {
+      await this.lessonDb.addPdfFiles(className, pdfFiles);
+    }
+
+    if (markdownFiles.length) {
+      const entries = [];
+      for (const file of markdownFiles) {
+        const content = await file.text();
+        entries.push({
+          name: file.name || `${className} Lesson.md`,
+          content
+        });
+      }
+      await this.lessonDb.addMarkdownEntries(className, entries);
+    }
+
+    if (docxFiles.length) {
+      const entries = await this.convertDocxFiles(className, docxFiles);
+      await this.lessonDb.addHtmlEntries(className, entries, "docx");
+    }
+
+    await this.refreshLessonMetadata();
+    return {
+      addedCount: pdfFiles.length + markdownFiles.length + docxFiles.length,
+      pdfCount: pdfFiles.length,
+      markdownCount: markdownFiles.length,
+      docxCount: docxFiles.length,
+      unsupportedCount: unsupportedFiles.length,
+      unsupportedNames: unsupportedFiles.map((file) => file.name || "Unknown file")
+    };
+  }
+
+  async addMarkdownFiles(className, files) {
+    const entries = [];
+    for (const file of files) {
+      const content = await file.text();
+      entries.push({
+        name: file.name || `${className} Lesson.md`,
+        content
+      });
+    }
+    await this.lessonDb.addMarkdownEntries(className, entries);
+    await this.refreshLessonMetadata();
+  }
+
+  async addMarkdownText(className, title, content) {
+    await this.lessonDb.addMarkdownEntries(className, [{
+      name: title || `Markdown Lesson ${new Date().toLocaleDateString()}`,
+      content
+    }]);
+    await this.refreshLessonMetadata();
+  }
+
+  async getLessonsForClass(className) {
+    return this.lessonDb.getClassLessonRecords(className);
+  }
+
+  async getLessonSequenceForClass(className) {
+    const storedLessons = await this.getLessonsForClass(className);
+    return [...storedLessons, this.createBlankBoardLesson(className)];
+  }
+
+  createBlankBoardLesson(className) {
+    return {
+      id: `blank-board::${className}`,
+      className,
+      type: "blank",
+      name: "Blank Board",
+      content: "",
+      addedAt: 0,
+      isVirtual: true
+    };
+  }
+
+  async clearLessonsForClass(className) {
+    await this.lessonDb.clearClassLessons(className);
+    await this.refreshLessonMetadata();
+  }
+
+  async clearAllLessons() {
+    await this.lessonDb.clearAllLessons();
+    await this.refreshLessonMetadata();
+  }
+
+  async reorderLessons(className, orderedIds) {
+    await this.lessonDb.reorderClassLessons(className, orderedIds);
+  }
+
+  loadSession() {
+    return this.settingsStore.loadSession();
+  }
+
+  saveSession(session) {
+    this.settingsStore.saveSession(session);
+  }
+
+  clearSession() {
+    this.settingsStore.clearSession();
+  }
+}
+return { AppModel };
+})();
+
+// src/services/annotation-service.js
+const { AnnotationService } = (() => {
+const toolbarPositionKey = "lessonCockpitAnnotationToolbarPosition";
+
+class AnnotationService {
+  constructor() {
+    this.mode = false;
+    this.tool = "pen";
+    this.color = "#1d1d1f";
+    this.toolbarPosition = localStorage.getItem(toolbarPositionKey) || "top";
+    this.strokesByLesson = new Map();
+    this.activeStroke = null;
+    this.activePointerId = null;
+  }
+
+  getLessonStrokes(lessonKey) {
+    if (!this.strokesByLesson.has(lessonKey)) {
+      this.strokesByLesson.set(lessonKey, []);
+    }
+    return this.strokesByLesson.get(lessonKey);
+  }
+
+  getViewModel(lessonKey) {
+    return {
+      lessonKey,
+      mode: this.mode,
+      tool: this.tool,
+      color: this.color,
+      toolbarPosition: this.toolbarPosition,
+      strokeCount: this.getLessonStrokes(lessonKey).length
+    };
+  }
+
+  getConfig(tool = this.tool) {
+    if (tool === "highlighter") {
+      return { width: 16, alpha: 0.22, composite: "source-over" };
+    }
+    if (tool === "eraser") {
+      return { width: 22, alpha: 1, composite: "destination-out" };
+    }
+    return { width: 2, alpha: 1, composite: "source-over" };
+  }
+
+  toggleMode() {
+    this.mode = !this.mode;
+    if (!this.mode) {
+      this.activeStroke = null;
+      this.activePointerId = null;
+    }
+  }
+
+  toggleToolbarPosition() {
+    this.toolbarPosition = this.toolbarPosition === "bottom" ? "top" : "bottom";
+    localStorage.setItem(toolbarPositionKey, this.toolbarPosition);
+  }
+
+  setTool(tool) {
+    this.tool = tool;
+  }
+
+  setColor(color) {
+    this.color = color;
+    if (this.tool === "eraser") {
+      this.tool = "pen";
+    }
+  }
+
+  startStroke(lessonKey, pointerId, point) {
+    const stroke = {
+      tool: this.tool,
+      color: this.color,
+      points: [point]
+    };
+    this.activePointerId = pointerId;
+    this.activeStroke = stroke;
+    this.getLessonStrokes(lessonKey).push(stroke);
+    return stroke;
+  }
+
+  appendPoint(pointerId, point) {
+    if (!this.activeStroke || this.activePointerId !== pointerId) {
+      return null;
+    }
+    this.activeStroke.points.push(point);
+    return this.activeStroke;
+  }
+
+  endStroke(pointerId) {
+    if (this.activePointerId !== pointerId) {
+      return;
+    }
+    this.activePointerId = null;
+    this.activeStroke = null;
+  }
+
+  undo(lessonKey) {
+    const strokes = this.getLessonStrokes(lessonKey);
+    if (strokes.length) {
+      strokes.pop();
+    }
+  }
+
+  clear(lessonKey) {
+    this.strokesByLesson.set(lessonKey, []);
+  }
+}
+return { AnnotationService };
+})();
+
+// src/services/behavior-service.js
+const { BehaviorService } = (() => {
+class BehaviorService {
+  constructor(settingsStore) {
+    this.settingsStore = settingsStore;
+  }
+
+  getLogs() {
+    return this.settingsStore.loadBehaviorLogs();
+  }
+
+  saveLogs(logs) {
+    this.settingsStore.saveBehaviorLogs(logs);
+  }
+
+  addLog(entry) {
+    const logs = this.getLogs();
+    logs.push(entry);
+    this.saveLogs(logs);
+    return entry;
+  }
+
+  clearLogs() {
+    this.settingsStore.clearBehaviorLogs();
+  }
+
+  getRecommendationForPoints(points) {
+    if (points >= 10) return "Admin referral";
+    if (points >= 7) return "Parent contact";
+    if (points >= 5) return "Reflection sheet";
+    if (points >= 3) return "Stay after class";
+    return "";
+  }
+
+  getTodayHourLogs(hour) {
+    if (!hour) {
+      return [];
+    }
+    const today = new Date().toISOString().split("T")[0];
+    return this.getLogs().filter((log) => log.timestamp.split("T")[0] === today && log.hour === hour);
+  }
+
+  getWarningMap(hour) {
+    const counts = this.getTodayHourLogs(hour)
+      .filter((log) => log.type === "negative")
+      .reduce((totals, log) => {
+        const category = String(log.category || "").trim();
+        if (!category) {
+          return totals;
+        }
+        totals[category] = (totals[category] || 0) + 1;
+        return totals;
+      }, {});
+
+    return Object.fromEntries(
+      Object.entries(counts).filter(([, count]) => count >= 3)
+    );
+  }
+
+  getHourSummary(hour, className) {
+    const todayLogs = this.getTodayHourLogs(hour);
+    const negativeTotals = todayLogs
+      .filter((log) => log.type === "negative")
+      .reduce((totals, log) => {
+        const student = String(log.student || "").trim();
+        if (!student) {
+          return totals;
+        }
+        totals[student] = (totals[student] || 0) + Math.max(0, Number(log.points || 0));
+        return totals;
+      }, {});
+
+    const recommendations = Object.entries(negativeTotals)
+      .map(([student, points]) => ({
+        student,
+        points,
+        recommendation: this.getRecommendationForPoints(points)
+      }))
+      .filter((entry) => entry.recommendation)
+      .sort((left, right) => right.points - left.points || left.student.localeCompare(right.student));
+
+    return {
+      title: hour,
+      className,
+      totalEntries: todayLogs.length,
+      negativePointTotal: Object.values(negativeTotals).reduce((sum, value) => sum + value, 0),
+      negativeTotals,
+      recommendations,
+      recentLogs: todayLogs.slice().sort((left, right) => new Date(right.timestamp) - new Date(left.timestamp))
+    };
+  }
+
+  getFilteredLogs(filters) {
+    const {
+      dateFrom = "",
+      dateTo = "",
+      className = "",
+      studentQuery = "",
+      type = ""
+    } = filters;
+
+    const loweredStudent = String(studentQuery || "").trim().toLowerCase();
+    return this.getLogs().filter((log) => {
+      const logDate = String(log.timestamp || "").split("T")[0];
+      const matchesDate = (!dateFrom || logDate >= dateFrom) && (!dateTo || logDate <= dateTo);
+      const matchesClass = !className || log.class === className;
+      const matchesStudent = !loweredStudent || String(log.student || "").toLowerCase().includes(loweredStudent);
+      const matchesType = !type || log.type === type;
+      return matchesDate && matchesClass && matchesStudent && matchesType;
+    });
+  }
+
+  getReportStats(logs) {
+    return {
+      totalEntries: logs.length,
+      positiveCount: logs.filter((log) => log.type === "positive").length,
+      negativeCount: logs.filter((log) => log.type === "negative").length,
+      uniqueStudents: new Set(logs.map((log) => log.student)).size
+    };
+  }
+
+  exportCsv(logs) {
+    const headers = ["Date", "Time", "Student", "Class", "Hour", "Category", "Type", "Points"];
+    const rows = logs
+      .slice()
+      .sort((left, right) => new Date(right.timestamp) - new Date(left.timestamp))
+      .map((log) => {
+        const date = new Date(log.timestamp).toLocaleDateString("en-US");
+        const time = new Date(log.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        return [date, time, log.student, log.class, log.hour || "", log.category, log.type, String(log.points || 0)];
+      });
+
+    return [
+      headers.join(","),
+      ...rows.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+    ].join("\n");
+  }
+}
+return { BehaviorService };
+})();
+
+// src/renderers/lesson-renderer.js
+const { splitMarkdownSlides, buildLessonStageModel, initializeLessonStage } = (() => {
+let activePdfRenderToken = 0;
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function splitMarkdownSlides(content) {
+  const slides = String(content || "")
+    .split(/\r?\n\s*---\s*\r?\n/g)
+    .map((slide) => slide.trim())
+    .filter(Boolean);
+  return slides.length ? slides : [String(content || "")];
+}
+
+function fallbackMarkdown(markdown) {
+  return `<pre>${escapeHtml(markdown)}</pre>`;
+}
+
+function normalizeDisplayMathBlocks(container) {
+  if (!container) {
+    return;
+  }
+
+  const nodes = Array.from(container.children || []);
+  let index = 0;
+
+  while (index < nodes.length) {
+    const startNode = nodes[index];
+    const isStart = startNode && startNode.tagName === "P" && startNode.textContent.trim() === "$$";
+    if (!isStart) {
+      index += 1;
+      continue;
+    }
+
+    let endIndex = -1;
+    for (let scan = index + 1; scan < nodes.length; scan += 1) {
+      const candidate = nodes[scan];
+      const isEnd = candidate && candidate.tagName === "P" && candidate.textContent.trim() === "$$";
+      if (isEnd) {
+        endIndex = scan;
+        break;
+      }
+    }
+
+    if (endIndex === -1) {
+      index += 1;
+      continue;
+    }
+
+    const lines = nodes.slice(index + 1, endIndex)
+      .map((node) => (node.textContent || "").trim())
+      .filter(Boolean);
+
+    const wrapper = document.createElement("div");
+    wrapper.textContent = `$$\n${lines.join("\n")}\n$$`;
+
+    startNode.replaceWith(wrapper);
+    nodes.slice(index + 1, endIndex).forEach((node) => node.remove());
+    nodes[endIndex].remove();
+
+    const updated = Array.from(container.children || []);
+    nodes.length = 0;
+    updated.forEach((node) => nodes.push(node));
+    index += 1;
+  }
+}
+
+function renderMath(container) {
+  if (!container || typeof window.renderMathInElement !== "function") {
+    return;
+  }
+
+  try {
+    window.renderMathInElement(container, {
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false }
+      ],
+      throwOnError: false
+    });
+  } catch (error) {
+    // Keep lesson rendering resilient if math parsing fails.
+  }
+}
+
+function buildLessonStageModel(record, markdownSlideIndex) {
+  if (!record) {
+    return {
+      type: "empty",
+      slideCount: 0,
+      html: '<div class="empty-state">No lesson is loaded.</div>'
+    };
+  }
+
+  if (record.type === "blank") {
+    return {
+      type: "blank",
+      slideCount: 0,
+      record,
+      html: `
+        <div id="lessonRenderSurface" class="markdown-stage">
+          <h1>Blank Board</h1>
+          <p>This class can always open into a ready-to-write board, even when no file-based lesson has been added yet.</p>
+          <p>Use annotations here for live notes, worked examples, diagrams, or impromptu teaching moments.</p>
+        </div>
+      `
+    };
+  }
+
+  if (record.type === "pdf") {
+    return {
+      type: "pdf",
+      slideCount: 0,
+      record,
+      html: '<div id="lessonRenderSurface" class="pdf-stage"><div class="pdf-status">Loading PDF...</div></div>'
+    };
+  }
+
+  if (record.type === "docx" || record.type === "html") {
+    return {
+      type: record.type,
+      slideCount: 0,
+      record,
+      html: `<div id="lessonRenderSurface" class="markdown-stage">${record.content || "<div class=\"empty-state\">This DOCX lesson was imported without readable content.</div>"}</div>`
+    };
+  }
+
+  const slides = splitMarkdownSlides(record.content || "");
+  const safeIndex = Math.min(Math.max(markdownSlideIndex, 0), Math.max(slides.length - 1, 0));
+  const markdown = slides[safeIndex] || "";
+  const parsedHtml = window.marked && typeof window.marked.parse === "function"
+    ? window.marked.parse(markdown)
+    : fallbackMarkdown(markdown);
+
+  return {
+    type: "markdown",
+    slideCount: slides.length,
+    record,
+    html: `<div id="lessonRenderSurface" class="markdown-stage">${parsedHtml}</div>`
+  };
+}
+
+async function renderPdfStage(surface, blob, renderToken) {
+  if (!surface || !blob) {
+    return;
+  }
+
+  surface.innerHTML = '<div class="pdf-status">Loading PDF...</div>';
+
+  try {
+    const data = await blob.arrayBuffer();
+    if (renderToken !== activePdfRenderToken) {
+      return;
+    }
+
+    const loadingTask = pdfjsLib.getDocument({ data });
+    const pdf = await loadingTask.promise;
+    if (renderToken !== activePdfRenderToken) {
+      return;
+    }
+
+    surface.innerHTML = "";
+    for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+      const page = await pdf.getPage(pageNumber);
+      if (renderToken !== activePdfRenderToken) {
+        return;
+      }
+
+      const baseViewport = page.getViewport({ scale: 1 });
+      const maxWidth = Math.min(surface.clientWidth || 1040, 1040);
+      const scale = Math.min(2, Math.max(1, maxWidth / baseViewport.width));
+      const viewport = page.getViewport({ scale });
+      const canvas = document.createElement("canvas");
+      canvas.className = "pdf-page-canvas";
+
+      const context = canvas.getContext("2d");
+      const outputScale = window.devicePixelRatio || 1;
+      canvas.width = Math.floor(viewport.width * outputScale);
+      canvas.height = Math.floor(viewport.height * outputScale);
+      canvas.style.width = `${Math.floor(viewport.width)}px`;
+      canvas.style.height = `${Math.floor(viewport.height)}px`;
+      context.setTransform(outputScale, 0, 0, outputScale, 0, 0);
+      surface.appendChild(canvas);
+      await page.render({ canvasContext: context, viewport }).promise;
+    }
+  } catch (error) {
+    if (renderToken !== activePdfRenderToken) {
+      return;
+    }
+    surface.innerHTML = '<div class="pdf-status">Unable to display this PDF. Try re-adding the file if the problem continues.</div>';
+  }
+}
+
+async function initializeLessonStage(stageModel) {
+  const surface = document.getElementById("lessonRenderSurface");
+  if (!surface || !stageModel) {
+    return;
+  }
+
+  if (stageModel.type === "markdown") {
+    normalizeDisplayMathBlocks(surface);
+    renderMath(surface);
+    return;
+  }
+
+  if (stageModel.type === "docx" || stageModel.type === "html") {
+    renderMath(surface);
+    return;
+  }
+
+  if (stageModel.type === "blank") {
+    return;
+  }
+
+  if (stageModel.type === "pdf") {
+    const renderToken = ++activePdfRenderToken;
+    await renderPdfStage(surface, stageModel.record?.blob, renderToken);
+  }
+}
+return { splitMarkdownSlides, buildLessonStageModel, initializeLessonStage };
+})();
+
+// src/ui/screens/setup-screen.js
+const { renderSetupScreen } = (() => {
+function renderSetupScreen(container, vm, actions) {
+  container.innerHTML = `
+    <section class="screen shell-card panel">
+      <div class="screen-header">
+        <div>
+          <div class="eyebrow">First-time setup</div>
+          <h1 class="headline">Map your hours before the room opens.</h1>
+          <p class="subhead">The setup flow stays focused on just two things: your class list and which hour points to which course.</p>
+        </div>
+      </div>
+
+      <div class="split-layout">
+        <section class="panel">
+          <h2>Class list</h2>
+          <div class="field-stack">
+            <label class="field">
+              <span class="label">One class name per line</span>
+              <textarea id="setupClassList" class="textarea">${vm.classOptions.join("\n")}</textarea>
+            </label>
+            <div class="btn-row">
+              <button id="applyClassListBtn" class="btn">Apply class list</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Hour map</h2>
+          <div class="mapping-grid">
+            ${hourLabels.map((hour) => `
+              <label class="mapping-row">
+                <span class="label">${hour}</span>
+                <select class="select" data-hour-select="${hour}">
+                  <option value="">-- Select class --</option>
+                  ${vm.classOptions.map((className) => `
+                    <option value="${escapeHtml(className)}" ${vm.hourMappings[hour] === className ? "selected" : ""}>${escapeHtml(className)}</option>
+                  `).join("")}
+                </select>
+              </label>
+            `).join("")}
+          </div>
+        </section>
+      </div>
+
+      <div class="btn-row" style="margin-top: 20px;">
+        <button id="finishSetupBtn" class="btn">Done</button>
+      </div>
+    </section>
+  `;
+
+  container.querySelector("#applyClassListBtn")?.addEventListener("click", () => {
+    actions.applyClassList(container.querySelector("#setupClassList")?.value || "");
+  });
+
+  container.querySelector("#finishSetupBtn")?.addEventListener("click", () => {
+    actions.finishSetup(container.querySelector("#setupClassList")?.value || "");
+  });
+
+  container.querySelectorAll("[data-hour-select]").forEach((select) => {
+    select.addEventListener("change", (event) => {
+      actions.setHourMapping(select.dataset.hourSelect, event.target.value);
+    });
+  });
+}
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+return { renderSetupScreen };
+})();
+
+// src/ui/screens/home-screen.js
+const { renderHomeScreen } = (() => {
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function renderHomeScreen(container, vm, actions) {
+  const hourCards = vm.hours.length
+    ? vm.hours.map((entry) => `
+      <article class="hour-card" data-has-lessons="${entry.hasLessons}">
+        <div class="hour-card-header">
+          <h3>${escapeHtml(entry.hour)}</h3>
+          <span class="status-pill ${entry.hasLessons ? "status-pill--ready" : "status-pill--empty"}">
+            ${entry.hasLessons ? `${entry.lessonCount} stored lesson${entry.lessonCount === 1 ? "" : "s"}` : "Blank board ready"}
+          </span>
+        </div>
+        <div>
+          <p>${escapeHtml(entry.className)}</p>
+          <p class="hint" style="margin-top: 8px;">${entry.hasRoster ? `${entry.rosterCount} student${entry.rosterCount === 1 ? "" : "s"} loaded` : "No students loaded yet"}</p>
+        </div>
+        <div class="btn-row" style="margin-top: auto;">
+          <button class="btn" data-open-hour="${escapeHtml(entry.hour)}">Open class</button>
+          ${entry.hasRoster ? "" : `<button class="btn-ghost" data-add-students-hour="${escapeHtml(entry.hour)}">Add students</button>`}
+        </div>
+      </article>
+    `).join("")
+    : '<div class="empty-state">No hours are mapped yet. Open setup and assign each hour to a class first.</div>';
+
+  container.innerHTML = `
+    <section class="screen layout-grid">
+      <section class="shell-card panel hero-grid">
+        <div>
+          <div class="eyebrow">Lesson cockpit</div>
+          <h1 class="headline">A cleaner launch pad for the same classroom workflow.</h1>
+          <p class="subhead">Hours, lessons, and class state now hang off separate modules. That means the home page can look sharper without dragging storage and lesson logic around with it.</p>
+          <div class="btn-row" style="margin-top: 18px;">
+            <button id="openAdminBtn" class="btn">Admin</button>
+            <button id="openSetupBtn" class="btn-ghost">Edit setup</button>
+          </div>
+        </div>
+
+        <aside class="callout">
+          <h2 style="margin-top: 0;">System status</h2>
+          <div class="metrics">
+            <div class="metric">
+              <div class="metric-value">${vm.metrics.mappedHours}</div>
+              <div class="metric-label">Mapped hours</div>
+            </div>
+            <div class="metric">
+              <div class="metric-value">${vm.metrics.storedClasses}</div>
+              <div class="metric-label">Classes with lessons</div>
+            </div>
+            <div class="metric">
+              <div class="metric-value">${vm.metrics.totalLessons}</div>
+              <div class="metric-label">Stored lessons</div>
+            </div>
+          </div>
+          <p class="hint" style="margin-top: 16px;">The current build already covers setup, class management, lesson storage, a basic lesson player, behavior tools, reports, cold call, and live annotation on the lesson board.</p>
+        </aside>
+      </section>
+
+      <section class="shell-card panel">
+        <div class="screen-header">
+          <div>
+            <div class="eyebrow">Hours</div>
+            <h2 style="margin: 10px 0 0;">Open a lesson by hour</h2>
+          </div>
+        </div>
+        <div class="hour-grid">${hourCards}</div>
+      </section>
+    </section>
+  `;
+
+  container.querySelector("#openAdminBtn")?.addEventListener("click", actions.openAdmin);
+  container.querySelector("#openSetupBtn")?.addEventListener("click", actions.openSetup);
+  container.querySelectorAll("[data-open-hour]").forEach((button) => {
+    button.addEventListener("click", () => actions.openHour(button.dataset.openHour));
+  });
+  container.querySelectorAll("[data-add-students-hour]").forEach((button) => {
+    button.addEventListener("click", () => actions.openRosterHour(button.dataset.addStudentsHour));
+  });
+}
+return { renderHomeScreen };
+})();
+
+// src/ui/screens/admin-screen.js
+const { renderAdminScreen } = (() => {
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function renderAdminScreen(container, vm, actions) {
+  const selectedClassLessons = vm.selectedLessonClass
+    ? vm.lessonRecords.map((record, index) => `
+      <div class="lesson-row">
+        <div class="lesson-meta">
+          <strong>${index + 1}. [${record.type === "markdown" ? "Markdown" : record.type === "pdf" ? "PDF" : record.type === "docx" ? "DOCX" : "HTML"}] ${escapeHtml(record.name)}</strong>
+          <span class="hint">${new Date(record.addedAt || Date.now()).toLocaleString()}</span>
+        </div>
+        <div class="toolbar-row">
+          <button class="btn-ghost" data-move-up="${record.id}" ${index === 0 ? "disabled" : ""}>Up</button>
+          <button class="btn-ghost" data-move-down="${record.id}" ${index === vm.lessonRecords.length - 1 ? "disabled" : ""}>Down</button>
+        </div>
+      </div>
+    `).join("")
+    : '<div class="empty-state">Select a class to inspect stored lessons.</div>';
+
+  container.innerHTML = `
+    <section class="screen layout-grid">
+      <section class="shell-card panel">
+        <div class="screen-header">
+          <div>
+            <div class="eyebrow">Admin</div>
+            <h1 class="headline" style="font-size: clamp(34px, 5vw, 56px);">Manage classes, rosters, and lesson storage.</h1>
+            <p class="subhead">This screen owns administrative tasks only. It no longer mixes those responsibilities into the lesson view.</p>
+          </div>
+          <div class="btn-row">
+            <button id="backHomeBtn" class="btn-ghost">Back</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="shell-card panel split-layout">
+        <section class="panel">
+          <h2>Class list</h2>
+          <label class="field">
+            <span class="label">One class name per line</span>
+            <textarea id="adminClassList" class="textarea">${vm.classOptions.join("\n")}</textarea>
+          </label>
+          <div class="btn-row" style="margin-top: 14px;">
+            <button id="saveClassListBtn" class="btn">Save class list</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Hour map</h2>
+          <div class="mapping-grid">
+            ${vm.hours.map((entry) => `
+              <label class="mapping-row">
+                <span class="label">${escapeHtml(entry.hour)}</span>
+                <select class="select" data-hour-select="${escapeHtml(entry.hour)}">
+                  <option value="">-- Unassigned --</option>
+                  ${vm.classOptions.map((className) => `
+                    <option value="${escapeHtml(className)}" ${entry.className === className ? "selected" : ""}>${escapeHtml(className)}</option>
+                  `).join("")}
+                </select>
+              </label>
+            `).join("")}
+          </div>
+        </section>
+      </section>
+
+      <section class="shell-card panel split-layout">
+        <section class="panel">
+          <h2>Students</h2>
+          <label class="field">
+            <span class="label">Select hour</span>
+            <select id="rosterHourSelect" class="select">
+              <option value="">-- Select an hour --</option>
+              ${vm.hours.map((entry) => `
+                <option value="${escapeHtml(entry.hour)}" ${vm.selectedRosterHour === entry.hour ? "selected" : ""}>${escapeHtml(entry.hour)} (${escapeHtml(entry.className || "Unassigned")})</option>
+              `).join("")}
+            </select>
+          </label>
+          <label class="field" style="margin-top: 14px;">
+            <span class="label">One student per line</span>
+            <textarea id="rosterTextarea" class="textarea" ${vm.selectedRosterHour ? "" : "disabled"}>${vm.roster.join("\n")}</textarea>
+          </label>
+          <div class="btn-row" style="margin-top: 14px;">
+            <button id="saveRosterBtn" class="btn" ${vm.selectedRosterHour ? "" : "disabled"}>Save roster</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Lesson storage</h2>
+          <p class="hint">Select a class first, then use one file picker for PDFs, markdown files, or DOCX files, or paste lesson text below.</p>
+          <label class="field">
+            <span class="label">Select class</span>
+            <select id="lessonClassSelect" class="select">
+              <option value="">-- Select a class --</option>
+              ${vm.classOptions.map((className) => `
+                <option value="${escapeHtml(className)}" ${vm.selectedLessonClass === className ? "selected" : ""}>${escapeHtml(className)}${vm.lessonCounts[className] ? ` (${vm.lessonCounts[className]} stored)` : ""}</option>
+              `).join("")}
+            </select>
+          </label>
+          <div class="btn-row" style="margin-top: 14px;">
+            <button id="addLessonFileBtn" class="btn" ${vm.selectedLessonClass ? "" : "disabled"}>Add lesson file...</button>
+          </div>
+          <p class="hint" style="margin-top: 10px;">Supported now: PDF, markdown, and DOCX files. DOCX imports are simplified for readability rather than exact Word layout.</p>
+          <div class="field-stack" style="margin-top: 14px;">
+            <label class="field">
+              <span class="label">Paste markdown lesson title</span>
+              <input id="markdownTitleInput" class="input" type="text" placeholder="Lesson title" ${vm.selectedLessonClass ? "" : "disabled"} />
+            </label>
+            <label class="field">
+              <span class="label">Paste markdown lesson</span>
+              <textarea id="markdownContentInput" class="textarea" placeholder="# Bellwork" ${vm.selectedLessonClass ? "" : "disabled"}></textarea>
+            </label>
+          </div>
+          <div class="btn-row" style="margin-top: 14px;">
+            <button id="saveMarkdownBtn" class="btn-secondary" ${vm.selectedLessonClass ? "" : "disabled"}>Save markdown lesson</button>
+            <button id="clearClassLessonsBtn" class="btn-danger" ${vm.selectedLessonClass ? "" : "disabled"}>Clear class lessons</button>
+            <button id="clearAllLessonsBtn" class="btn-ghost">Clear all lessons</button>
+          </div>
+          <p class="hint" style="margin-top: 12px;">PDF, markdown, and DOCX-derived records are stored locally in IndexedDB. This is already separated from the screen code.</p>
+        </section>
+      </section>
+
+      <section class="shell-card panel split-layout">
+        <section class="panel">
+          <h2>Positive feedback sound</h2>
+          <p class="hint">Use a short audio clip when logging positive behavior.</p>
+          <div class="btn-row" style="margin-top: 14px;">
+            <button id="chooseSoundBtn" class="btn-secondary">Choose sound</button>
+            <button id="previewSoundBtn" class="btn-ghost">Preview</button>
+            <button id="clearSoundBtn" class="btn-danger">Clear</button>
+          </div>
+          <p class="hint" style="margin-top: 12px;">${escapeHtml(vm.soundStatus)}</p>
+        </section>
+
+        <section class="panel">
+          <h2>Reports</h2>
+          <p class="hint">Behavior reporting now lives as its own screen instead of being mixed into the admin form.</p>
+          <div class="btn-row" style="margin-top: 14px;">
+            <button id="openReportBtn" class="btn">Open behavior report</button>
+          </div>
+        </section>
+      </section>
+
+      <section class="shell-card panel">
+        <div class="screen-header">
+          <div>
+            <div class="eyebrow">Stored lessons</div>
+            <h2 style="margin: 10px 0 0;">${vm.selectedLessonClass ? escapeHtml(vm.selectedLessonClass) : "Choose a class"}</h2>
+          </div>
+          ${vm.selectedLessonClass && vm.lessonRecords.length > 1 ? '<button id="saveLessonOrderBtn" class="btn">Save order</button>' : ""}
+        </div>
+        <div class="lesson-list">${selectedClassLessons}</div>
+      </section>
+    </section>
+  `;
+
+  container.querySelector("#backHomeBtn")?.addEventListener("click", actions.backHome);
+  container.querySelector("#saveClassListBtn")?.addEventListener("click", () => actions.saveClassList(container.querySelector("#adminClassList")?.value || ""));
+  container.querySelectorAll("[data-hour-select]").forEach((select) => {
+    select.addEventListener("change", (event) => actions.setHourMapping(select.dataset.hourSelect, event.target.value));
+  });
+
+  container.querySelector("#rosterHourSelect")?.addEventListener("change", (event) => actions.selectRosterHour(event.target.value));
+  container.querySelector("#saveRosterBtn")?.addEventListener("click", () => {
+    actions.saveRoster(vm.selectedRosterHour, container.querySelector("#rosterTextarea")?.value || "");
+  });
+
+  container.querySelector("#lessonClassSelect")?.addEventListener("change", (event) => actions.selectLessonClass(event.target.value));
+  container.querySelector("#addLessonFileBtn")?.addEventListener("click", actions.addLessonFile);
+  container.querySelector("#saveMarkdownBtn")?.addEventListener("click", () => {
+    actions.saveMarkdownText(
+      container.querySelector("#markdownTitleInput")?.value || "",
+      container.querySelector("#markdownContentInput")?.value || ""
+    );
+  });
+  container.querySelector("#clearClassLessonsBtn")?.addEventListener("click", actions.clearClassLessons);
+  container.querySelector("#clearAllLessonsBtn")?.addEventListener("click", actions.clearAllLessons);
+  container.querySelector("#saveLessonOrderBtn")?.addEventListener("click", actions.saveLessonOrder);
+  container.querySelector("#chooseSoundBtn")?.addEventListener("click", actions.chooseSound);
+  container.querySelector("#previewSoundBtn")?.addEventListener("click", actions.previewSound);
+  container.querySelector("#clearSoundBtn")?.addEventListener("click", actions.clearSound);
+  container.querySelector("#openReportBtn")?.addEventListener("click", actions.openReport);
+
+  container.querySelectorAll("[data-move-up]").forEach((button) => {
+    button.addEventListener("click", () => actions.moveLesson(button.dataset.moveUp, -1));
+  });
+  container.querySelectorAll("[data-move-down]").forEach((button) => {
+    button.addEventListener("click", () => actions.moveLesson(button.dataset.moveDown, 1));
+  });
+}
+return { renderAdminScreen };
+})();
+
+// src/ui/screens/lesson-screen.js
+const { renderLessonScreen } = (() => {
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function renderLessonScreen(container, vm, actions) {
+  const currentRecord = vm.lessonRecords[vm.lessonIndex];
+  const lessonLabel = currentRecord
+    ? `Lesson ${vm.lessonIndex + 1} of ${vm.lessonRecords.length} - ${escapeHtml(currentRecord.name)}`
+    : "No lesson selected";
+
+  const warningsHtml = vm.warningCategories.length
+    ? `<div class="warning-row">${vm.warningCategories.map((category) => `<div class="warning-chip">${escapeHtml(category)} warning active (+1 severity)</div>`).join("")}</div>`
+    : '<div class="hint">No escalated behavior warnings active this hour.</div>';
+
+  const behaviorChoices = [
+    { type: "positive", category: "Participation", points: 0, label: "Participation" },
+    { type: "positive", category: "Devotion", points: 0, label: "Devotion" },
+    { type: "negative", category: "Talking", points: 1, label: "Talking 1" },
+    { type: "negative", category: "Out of Seat", points: 1, label: "Out of Seat 1" },
+    { type: "negative", category: "Ignored Directions", points: 2, label: "Ignored Directions 2" },
+    { type: "negative", category: "Off Task", points: 1, label: "Off Task 1" }
+  ];
+
+  const recentLogsHtml = vm.recentLogs.length
+    ? vm.recentLogs.slice(0, 8).map((log) => `
+      <div class="log-entry">
+        <strong>${escapeHtml(log.student)} - ${escapeHtml(log.category)}</strong>
+        <div class="hint">${new Date(log.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}${log.type === "negative" ? ` - ${Number(log.points || 0)} point${Number(log.points || 0) === 1 ? "" : "s"}` : ""}</div>
+      </div>
+    `).join("")
+    : '<div class="empty-state">No behaviors logged yet for this hour today.</div>';
+
+  container.innerHTML = `
+    <section class="screen lesson-screen">
+      <section class="shell-card panel">
+        <div class="screen-header">
+          <div>
+            <div class="eyebrow">Lesson mode</div>
+            <h1 style="margin: 10px 0 6px;">${escapeHtml(vm.currentHour)}</h1>
+            <p class="subhead" style="margin: 0;">${escapeHtml(vm.currentClass)}</p>
+            <p class="hint" style="margin-top: 10px;">${lessonLabel}</p>
+          </div>
+          <div class="toolbar-row">
+            <button id="backToHomeBtn" class="btn-ghost">Back</button>
+            <button id="prevLessonBtn" class="btn-ghost">Previous</button>
+            <button id="nextLessonBtn" class="btn">Next</button>
+            <button id="openLessonFileBtn" class="btn-ghost">Open file...</button>
+            <button id="coldCallBtn" class="btn-secondary">Cold call</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="split-layout">
+        <div class="shell-card lesson-stage">
+          <div class="lesson-stage-shell" id="lessonStageShell">
+            <div class="annotation-toolbar ${vm.annotation.toolbarPosition === "bottom" ? "is-bottom" : ""}">
+              <button id="annotationModeBtn" class="annotation-tool ${vm.annotation.mode ? "is-active" : ""}">${vm.annotation.mode ? "Annotation ON" : "Annotation OFF"}</button>
+              <button id="annotationPositionBtn" class="annotation-tool">${vm.annotation.toolbarPosition === "bottom" ? "Toolbar Top" : "Toolbar Bottom"}</button>
+              <button id="annotationPenBtn" class="annotation-tool ${vm.annotation.tool === "pen" ? "is-active" : ""}">Pen</button>
+              <button id="annotationHighlighterBtn" class="annotation-tool ${vm.annotation.tool === "highlighter" ? "is-active" : ""}">HL</button>
+              <button id="annotationEraserBtn" class="annotation-tool ${vm.annotation.tool === "eraser" ? "is-active" : ""}">Eraser</button>
+              <button id="annotationRedBtn" class="annotation-swatch ${vm.annotation.color.toLowerCase() === "#ff3b30" ? "is-active" : ""}" style="background: #ff3b30;" aria-label="Red"></button>
+              <button id="annotationBlueBtn" class="annotation-swatch ${vm.annotation.color.toLowerCase() === "#007aff" ? "is-active" : ""}" style="background: #007aff;" aria-label="Blue"></button>
+              <button id="annotationBlackBtn" class="annotation-swatch ${vm.annotation.color.toLowerCase() === "#1d1d1f" ? "is-active" : ""}" style="background: #1d1d1f;" aria-label="Black"></button>
+              <button id="annotationUndoBtn" class="annotation-tool">Undo</button>
+              <button id="annotationClearBtn" class="annotation-tool">Clear</button>
+            </div>
+            ${vm.lessonStage.html}
+            <canvas id="annotationCanvas" class="annotation-canvas ${vm.annotation.mode ? "is-active" : ""}"></canvas>
+          </div>
+        </div>
+
+        <aside class="shell-card panel layout-grid">
+          <section class="panel">
+            <h2>Cold call</h2>
+            <p class="cold-call-name">${escapeHtml(vm.coldCallName || "Ready")}</p>
+            <p class="hint">Remaining before reset: ${vm.coldCallRemaining}</p>
+            <div class="btn-row" style="margin-top: 12px;">
+              <button id="coldCallSideBtn" class="btn-secondary">Pick student</button>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2>Warnings</h2>
+            ${warningsHtml}
+          </section>
+
+          <section class="panel">
+            <h2>Behavior</h2>
+            <div class="behavior-grid">
+              ${behaviorChoices.map((choice) => `
+                <button
+                  class="choice-btn ${vm.selectedBehavior && vm.selectedBehavior.type === choice.type && vm.selectedBehavior.category === choice.category ? "is-selected" : ""}"
+                  data-kind="${choice.type}"
+                  data-behavior-type="${choice.type}"
+                  data-behavior-category="${escapeHtml(choice.category)}"
+                  data-behavior-points="${choice.points}"
+                >${escapeHtml(choice.label)}</button>
+              `).join("")}
+            </div>
+            <div class="field-stack" style="margin-top: 14px;">
+              <label class="field">
+                <span class="label">Custom positive</span>
+                <input id="customPositiveInput" class="input" type="text" placeholder="Other positive" />
+              </label>
+              <label class="field">
+                <span class="label">Custom negative</span>
+                <input id="customNegativeInput" class="input" type="text" placeholder="Other negative" />
+              </label>
+            </div>
+            <div class="banner" style="margin-top: 14px;">${vm.selectedBehavior ? `Selected: ${escapeHtml(vm.selectedBehavior.category)}${vm.selectedBehavior.type === "negative" ? ` (${vm.selectedBehavior.points} points)` : ""}` : "Select a behavior, then click a student."}</div>
+            <div class="field-stack" style="margin-top: 14px;">
+              <label class="field">
+                <span class="label">Quick add student</span>
+                <input id="quickAddStudentInput" class="input" type="text" placeholder="Add a student to this hour" />
+              </label>
+              <button id="quickAddStudentBtn" class="btn-ghost">Quick add</button>
+            </div>
+            <div class="student-grid" style="margin-top: 14px;">
+              ${vm.roster.map((student) => `<button class="student-chip" data-student-name="${escapeHtml(student)}">${escapeHtml(student)}</button>`).join("")}
+            </div>
+          </section>
+
+          <section class="panel">
+            <h2>Today's log</h2>
+            <div class="log-list">${recentLogsHtml}</div>
+          </section>
+        </aside>
+      </section>
+
+      <section class="shell-card panel">
+        <div class="banner">Lesson rendering, annotation, behavior tools, and live file imports now run through separated controller and service layers so lesson mode can stay focused on teaching.</div>
+      </section>
+    </section>
+  `;
+
+  container.querySelector("#backToHomeBtn")?.addEventListener("click", actions.backHome);
+  container.querySelector("#prevLessonBtn")?.addEventListener("click", () => actions.previous(vm.lessonStage.slideCount));
+  container.querySelector("#nextLessonBtn")?.addEventListener("click", () => actions.next(vm.lessonStage.slideCount));
+  container.querySelector("#openLessonFileBtn")?.addEventListener("click", actions.openLessonFile);
+  container.querySelector("#coldCallBtn")?.addEventListener("click", actions.coldCall);
+  container.querySelector("#coldCallSideBtn")?.addEventListener("click", actions.coldCall);
+  container.querySelector("#annotationModeBtn")?.addEventListener("click", actions.toggleAnnotationMode);
+  container.querySelector("#annotationPositionBtn")?.addEventListener("click", actions.toggleAnnotationToolbarPosition);
+  container.querySelector("#annotationPenBtn")?.addEventListener("click", () => actions.setAnnotationTool("pen"));
+  container.querySelector("#annotationHighlighterBtn")?.addEventListener("click", () => actions.setAnnotationTool("highlighter"));
+  container.querySelector("#annotationEraserBtn")?.addEventListener("click", () => actions.setAnnotationTool("eraser"));
+  container.querySelector("#annotationRedBtn")?.addEventListener("click", () => actions.setAnnotationColor("#ff3b30"));
+  container.querySelector("#annotationBlueBtn")?.addEventListener("click", () => actions.setAnnotationColor("#007AFF"));
+  container.querySelector("#annotationBlackBtn")?.addEventListener("click", () => actions.setAnnotationColor("#1d1d1f"));
+  container.querySelector("#annotationUndoBtn")?.addEventListener("click", actions.undoAnnotation);
+  container.querySelector("#annotationClearBtn")?.addEventListener("click", actions.clearAnnotations);
+  container.querySelectorAll("[data-behavior-type]").forEach((button) => {
+    button.addEventListener("click", () => actions.selectBehavior({
+      type: button.dataset.behaviorType,
+      category: button.dataset.behaviorCategory,
+      points: Number(button.dataset.behaviorPoints || 0)
+    }));
+  });
+  container.querySelector("#customPositiveInput")?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && event.target.value.trim()) {
+      actions.selectBehavior({ type: "positive", category: event.target.value.trim(), points: 0 });
+      event.target.value = "";
+      event.preventDefault();
+    }
+  });
+  container.querySelector("#customNegativeInput")?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && event.target.value.trim()) {
+      actions.selectBehavior({ type: "negative", category: event.target.value.trim(), points: 1 });
+      event.target.value = "";
+      event.preventDefault();
+    }
+  });
+  container.querySelector("#quickAddStudentBtn")?.addEventListener("click", () => {
+    actions.quickAddStudent(container.querySelector("#quickAddStudentInput")?.value || "");
+  });
+  container.querySelector("#quickAddStudentInput")?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      actions.quickAddStudent(event.target.value || "");
+      event.preventDefault();
+    }
+  });
+  container.querySelectorAll("[data-student-name]").forEach((button) => {
+    button.addEventListener("click", () => actions.logBehavior(button.dataset.studentName));
+  });
+}
+return { renderLessonScreen };
+})();
+
+// src/ui/screens/report-screen.js
+const { renderReportScreen } = (() => {
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function renderReportScreen(container, vm, actions) {
+  const rows = vm.logs.length
+    ? vm.logs
+      .slice()
+      .sort((left, right) => new Date(right.timestamp) - new Date(left.timestamp))
+      .map((log) => {
+        const dateLabel = `${new Date(log.timestamp).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} ${new Date(log.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+        return `
+          <div class="report-row">
+            <div>${escapeHtml(dateLabel)}</div>
+            <div><strong>${escapeHtml(log.student)}</strong></div>
+            <div>${escapeHtml(log.hour || "")}</div>
+            <div>${escapeHtml(log.class)}</div>
+            <div>
+              <span class="report-chip ${log.type === "positive" ? "report-chip--positive" : "report-chip--negative"}">${escapeHtml(log.category)}${log.type === "negative" ? ` (${Number(log.points || 0)})` : ""}</span>
+            </div>
+          </div>
+        `;
+      }).join("")
+    : '<div class="empty-state">No behavior entries match the current filters.</div>';
+
+  container.innerHTML = `
+    <section class="screen layout-grid">
+      <section class="shell-card panel">
+        <div class="screen-header">
+          <div>
+            <div class="eyebrow">Behavior report</div>
+            <h1 class="headline" style="font-size: clamp(34px, 5vw, 56px);">Review behavior data across classes.</h1>
+            <p class="subhead">Filtering and export are now isolated from lesson mode so reporting can grow without touching the player.</p>
+          </div>
+          <div class="btn-row">
+            <button id="backAdminBtn" class="btn-ghost">Back</button>
+            <button id="exportCsvBtn" class="btn">Export CSV</button>
+            <button id="clearLogsBtn" class="btn-danger">Clear all logs</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="shell-card panel">
+        <div class="report-filters">
+          <label class="field">
+            <span class="label">Date from</span>
+            <input id="filterDateFrom" class="input" type="date" value="${escapeHtml(vm.filters.dateFrom)}" />
+          </label>
+          <label class="field">
+            <span class="label">Date to</span>
+            <input id="filterDateTo" class="input" type="date" value="${escapeHtml(vm.filters.dateTo)}" />
+          </label>
+          <label class="field">
+            <span class="label">Class</span>
+            <select id="filterClass" class="select">
+              <option value="">All classes</option>
+              ${vm.classOptions.map((className) => `<option value="${escapeHtml(className)}" ${vm.filters.className === className ? "selected" : ""}>${escapeHtml(className)}</option>`).join("")}
+            </select>
+          </label>
+          <label class="field">
+            <span class="label">Student</span>
+            <input id="filterStudent" class="input" type="text" value="${escapeHtml(vm.filters.studentQuery)}" placeholder="Search student" />
+          </label>
+          <label class="field">
+            <span class="label">Type</span>
+            <select id="filterType" class="select">
+              <option value="">All types</option>
+              <option value="positive" ${vm.filters.type === "positive" ? "selected" : ""}>Positive</option>
+              <option value="negative" ${vm.filters.type === "negative" ? "selected" : ""}>Negative</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="shell-card panel">
+        <div class="kpi-row">
+          <div class="metric">
+            <div class="metric-value">${vm.stats.totalEntries}</div>
+            <div class="metric-label">Entries</div>
+          </div>
+          <div class="metric">
+            <div class="metric-value">${vm.stats.positiveCount}</div>
+            <div class="metric-label">Positive</div>
+          </div>
+          <div class="metric">
+            <div class="metric-value">${vm.stats.negativeCount}</div>
+            <div class="metric-label">Negative</div>
+          </div>
+          <div class="metric">
+            <div class="metric-value">${vm.stats.uniqueStudents}</div>
+            <div class="metric-label">Students</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="shell-card panel report-grid">
+        ${rows}
+      </section>
+    </section>
+  `;
+
+  container.querySelector("#backAdminBtn")?.addEventListener("click", actions.backAdmin);
+  container.querySelector("#exportCsvBtn")?.addEventListener("click", actions.exportCsv);
+  container.querySelector("#clearLogsBtn")?.addEventListener("click", actions.clearLogs);
+
+  ["#filterDateFrom", "#filterDateTo", "#filterClass", "#filterStudent", "#filterType"].forEach((selector) => {
+    container.querySelector(selector)?.addEventListener("change", () => {
+      actions.updateFilters({
+        dateFrom: container.querySelector("#filterDateFrom")?.value || "",
+        dateTo: container.querySelector("#filterDateTo")?.value || "",
+        className: container.querySelector("#filterClass")?.value || "",
+        studentQuery: container.querySelector("#filterStudent")?.value || "",
+        type: container.querySelector("#filterType")?.value || ""
+      });
+    });
+  });
+}
+return { renderReportScreen };
+})();
+
+// src/app.js
+const appRoot = document.getElementById("appRoot");
+const lessonFileInput = document.getElementById("lessonFileInput");
+const positiveSoundInput = document.getElementById("positiveSoundInput");
+
+const lessonDb = new LessonDatabase();
+const settingsStore = new SettingsStore();
+const model = new AppModel({ settingsStore, lessonDb });
+const annotationService = new AnnotationService();
+const behaviorService = new BehaviorService(settingsStore);
+
+const state = {
+  screen: "loading",
+  selectedRosterHour: "",
+  selectedLessonClass: "",
+  lessonRecords: [],
+  lessonOrderDraft: [],
+  currentHour: "",
+  currentClass: "",
+  lessonIndex: 0,
+  markdownSlideIndex: 0,
+  selectedBehavior: null,
+  coldCallName: "",
+  coldCallRemaining: [],
+  coldCallUsed: [],
+  reportFilters: getDefaultReportFilters()
+};
+
+let positiveAudio = null;
+
+function showMessage(message) {
+  window.alert(message);
+}
+
+function getDefaultReportFilters() {
+  const today = new Date().toISOString().split("T")[0];
+  const thirtyDaysAgo = new Date(Date.now() - (30 * 24 * 60 * 60 * 1000)).toISOString().split("T")[0];
+  return {
+    dateFrom: thirtyDaysAgo,
+    dateTo: today,
+    className: "",
+    studentQuery: "",
+    type: ""
+  };
+}
+
+function resetColdCallRotation() {
+  state.coldCallUsed = [];
+  state.coldCallRemaining = model.getRoster(state.currentHour).slice();
+}
+
+function playPositiveFeedbackSound() {
+  const dataUrl = settingsStore.loadPositiveSound();
+  if (!dataUrl) {
+    return;
+  }
+  if (!positiveAudio) {
+    positiveAudio = new Audio();
+  }
+  positiveAudio.src = dataUrl;
+  positiveAudio.currentTime = 0;
+  positiveAudio.volume = 0.4;
+  positiveAudio.play().catch(() => {});
+}
+
+function getNextColdCallStudent() {
+  if (!state.coldCallRemaining.length) {
+    resetColdCallRotation();
+  }
+  if (!state.coldCallRemaining.length) {
+    return "";
+  }
+  const randomIndex = Math.floor(Math.random() * state.coldCallRemaining.length);
+  const [student] = state.coldCallRemaining.splice(randomIndex, 1);
+  state.coldCallUsed.push(student);
+  return student;
+}
+
+function getHoursVm() {
+  return hourLabels.map((hour) => ({
+    hour,
+    className: model.hourMappings[hour] || ""
+  }));
+}
+
+function getCurrentLessonRecord() {
+  return state.lessonRecords[state.lessonIndex] || null;
+}
+
+function getActiveLessonImportClass() {
+  if (state.screen === "lesson") {
+    return state.currentClass || "";
+  }
+  return state.selectedLessonClass || "";
+}
+
+function getCurrentAnnotationKey() {
+  const record = getCurrentLessonRecord();
+  const recordId = record?.id ?? `idx-${state.lessonIndex}`;
+  const markdownPart = record?.type === "markdown" ? `slide-${state.markdownSlideIndex}` : "pdf";
+  return `${state.currentHour}::${state.currentClass}::${recordId}::${markdownPart}`;
+}
+
+function drawStroke(ctx, stroke) {
+  if (!stroke?.points?.length) {
+    return;
+  }
+
+  const config = annotationService.getConfig(stroke.tool);
+  ctx.globalCompositeOperation = config.composite;
+  ctx.globalAlpha = config.alpha;
+  ctx.strokeStyle = stroke.color;
+  ctx.lineWidth = config.width;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.beginPath();
+  ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
+  for (let index = 1; index < stroke.points.length; index += 1) {
+    ctx.lineTo(stroke.points[index].x, stroke.points[index].y);
+  }
+  if (stroke.points.length === 1) {
+    ctx.lineTo(stroke.points[0].x + 0.01, stroke.points[0].y + 0.01);
+  }
+  ctx.stroke();
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = "source-over";
+}
+
+function redrawAnnotationCanvas(canvas, lessonKey) {
+  if (!canvas) {
+    return;
+  }
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    return;
+  }
+
+  const dpr = window.devicePixelRatio || 1;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+  annotationService.getLessonStrokes(lessonKey).forEach((stroke) => drawStroke(ctx, stroke));
+}
+
+function resizeAnnotationCanvas(canvas, lessonKey) {
+  if (!canvas) {
+    return;
+  }
+  const rect = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = Math.max(1, Math.round(rect.width * dpr));
+  canvas.height = Math.max(1, Math.round(rect.height * dpr));
+  redrawAnnotationCanvas(canvas, lessonKey);
+}
+
+function initializeAnnotationOverlay(lessonKey) {
+  const canvas = document.getElementById("annotationCanvas");
+  if (!canvas) {
+    return;
+  }
+
+  resizeAnnotationCanvas(canvas, lessonKey);
+
+  if (canvas.dataset.bound === "1") {
+    return;
+  }
+
+  canvas.dataset.bound = "1";
+
+  const getPoint = (event) => {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top
+    };
+  };
+
+  canvas.addEventListener("pointerdown", (event) => {
+    if (!annotationService.mode) {
+      return;
+    }
+    if (event.pointerType === "mouse" && event.button !== 0) {
+      return;
+    }
+    const activeKey = getCurrentAnnotationKey();
+    const point = getPoint(event);
+    annotationService.startStroke(activeKey, event.pointerId, point);
+    canvas.setPointerCapture(event.pointerId);
+    redrawAnnotationCanvas(canvas, activeKey);
+    event.preventDefault();
+  });
+
+  canvas.addEventListener("pointermove", (event) => {
+    const activeKey = getCurrentAnnotationKey();
+    if (!annotationService.mode) {
+      return;
+    }
+    if (!annotationService.appendPoint(event.pointerId, getPoint(event))) {
+      return;
+    }
+    redrawAnnotationCanvas(canvas, activeKey);
+    event.preventDefault();
+  });
+
+  const endStroke = (event) => {
+    annotationService.endStroke(event.pointerId);
+  };
+
+  canvas.addEventListener("pointerup", endStroke);
+  canvas.addEventListener("pointercancel", endStroke);
+}
+
+function persistLessonSession() {
+  if (state.screen !== "lesson" || !state.currentHour || !state.currentClass || !state.lessonRecords.length) {
+    return;
+  }
+
+  const currentRecord = state.lessonRecords[state.lessonIndex];
+  model.saveSession({
+    hour: state.currentHour,
+    className: state.currentClass,
+    lessonIndex: state.lessonIndex,
+    recordId: currentRecord?.id ?? null,
+    markdownSlideIndex: state.markdownSlideIndex
+  });
+}
+
+function getWarningCategories() {
+  return Object.keys(behaviorService.getWarningMap(state.currentHour)).sort((left, right) => left.localeCompare(right));
+}
+
+function resolveBehaviorSelection(selection) {
+  if (!selection) {
+    return null;
+  }
+  const warningMap = behaviorService.getWarningMap(state.currentHour);
+  const bonus = selection.type === "negative" && warningMap[selection.category] ? 1 : 0;
+  return {
+    ...selection,
+    points: selection.type === "negative" ? Math.max(0, Number(selection.points || 0)) + bonus : 0
+  };
+}
+
+function logBehavior(studentName) {
+  const trimmedName = String(studentName || "").trim();
+  if (!trimmedName) {
+    showMessage("Choose a student first.");
+    return;
+  }
+
+  if (!state.selectedBehavior) {
+    showMessage("Select a behavior first.");
+    return;
+  }
+
+  const entry = {
+    timestamp: new Date().toISOString(),
+    class: state.currentClass,
+    hour: state.currentHour,
+    student: trimmedName,
+    type: state.selectedBehavior.type,
+    category: state.selectedBehavior.category,
+    points: state.selectedBehavior.type === "negative" ? state.selectedBehavior.points : 0
+  };
+
+  behaviorService.addLog(entry);
+  state.selectedBehavior = null;
+  if (entry.type === "positive") {
+    playPositiveFeedbackSound();
+  }
+  render();
+}
+
+function exportLogsCsv(logs) {
+  const csv = behaviorService.exportCsv(logs);
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = `behavior-report-${new Date().toISOString().split("T")[0]}.csv`;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
+async function restoreLessonSession() {
+  const saved = model.loadSession();
+  if (!saved?.hour || !saved?.className) {
+    return false;
+  }
+
+  if ((model.hourMappings[saved.hour] || "") !== saved.className) {
+    model.clearSession();
+    return false;
+  }
+
+  const records = await model.getLessonSequenceForClass(saved.className);
+
+  state.currentHour = saved.hour;
+  state.currentClass = saved.className;
+  state.lessonRecords = records;
+  state.lessonIndex = Math.min(Math.max(Number(saved.lessonIndex || 0), 0), records.length - 1);
+
+  if (saved.recordId != null) {
+    const matchIndex = records.findIndex((record) => Number(record.id) === Number(saved.recordId));
+    if (matchIndex >= 0) {
+      state.lessonIndex = matchIndex;
+    }
+  }
+
+  state.markdownSlideIndex = Math.max(Number(saved.markdownSlideIndex || 0), 0);
+  state.screen = "lesson";
+  return true;
+}
+
+function updateLessonOrderDraft(moveId, direction) {
+  const ids = state.lessonOrderDraft;
+  const currentIndex = ids.findIndex((id) => Number(id) === Number(moveId));
+  const nextIndex = currentIndex + direction;
+  if (currentIndex < 0 || nextIndex < 0 || nextIndex >= ids.length) {
+    return;
+  }
+
+  const [entry] = ids.splice(currentIndex, 1);
+  ids.splice(nextIndex, 0, entry);
+  const orderedMap = new Map(ids.map((id, index) => [Number(id), index]));
+  state.lessonRecords = state.lessonRecords.slice().sort((left, right) => orderedMap.get(Number(left.id)) - orderedMap.get(Number(right.id)));
+}
+
+function render() {
+  if (state.screen === "setup") {
+    renderSetupScreen(appRoot, {
+      classOptions: model.classOptions,
+      hourMappings: model.hourMappings
+    }, {
+      applyClassList(text) {
+        try {
+          model.saveClassList(text);
+          render();
+        } catch (error) {
+          showMessage(error.message);
+        }
+      },
+      finishSetup(text) {
+        try {
+          model.saveClassList(text);
+          state.screen = "home";
+          render();
+        } catch (error) {
+          showMessage(error.message);
+        }
+      },
+      setHourMapping(hour, className) {
+        model.setHourMapping(hour, className);
+      }
+    });
+    return;
+  }
+
+  if (state.screen === "home") {
+    renderHomeScreen(appRoot, {
+      hours: model.getHoursViewModel(),
+      metrics: model.getMetrics()
+    }, {
+      openAdmin() {
+        state.screen = "admin";
+        if (!state.selectedRosterHour) {
+          state.selectedRosterHour = hourLabels.find((hour) => !!model.hourMappings[hour]) || "";
+        }
+        render();
+      },
+      openRosterHour(hour) {
+        state.selectedRosterHour = hour;
+        state.screen = "admin";
+        render();
+      },
+      openSetup() {
+        state.screen = "setup";
+        render();
+      },
+      async openHour(hour) {
+        const className = model.hourMappings[hour];
+        if (!className) {
+          showMessage("This hour is not mapped yet.");
+          return;
+        }
+
+        const records = await model.getLessonSequenceForClass(className);
+
+        state.currentHour = hour;
+        state.currentClass = className;
+        state.lessonRecords = records;
+        state.lessonIndex = 0;
+        state.markdownSlideIndex = 0;
+        state.selectedBehavior = null;
+        state.coldCallName = "";
+        resetColdCallRotation();
+        state.screen = "lesson";
+        persistLessonSession();
+        render();
+      }
+    });
+    return;
+  }
+
+  if (state.screen === "admin") {
+    renderAdminScreen(appRoot, {
+      classOptions: model.classOptions,
+      hours: getHoursVm(),
+      selectedRosterHour: state.selectedRosterHour,
+      roster: state.selectedRosterHour ? model.getRoster(state.selectedRosterHour) : [],
+      selectedLessonClass: state.selectedLessonClass,
+      lessonCounts: model.lessonCounts,
+      lessonRecords: state.lessonRecords
+    }, {
+      backHome() {
+        state.screen = "home";
+        render();
+      },
+      saveClassList(text) {
+        try {
+          model.saveClassList(text);
+          state.selectedLessonClass = "";
+          state.lessonRecords = [];
+          render();
+          showMessage("Class list saved.");
+        } catch (error) {
+          showMessage(error.message);
+        }
+      },
+      setHourMapping(hour, className) {
+        model.setHourMapping(hour, className);
+      },
+      selectRosterHour(hour) {
+        state.selectedRosterHour = hour;
+        render();
+      },
+      saveRoster(hour, text) {
+        if (!hour) {
+          showMessage("Select an hour first.");
+          return;
+        }
+        const roster = model.saveRoster(hour, text);
+        render();
+        showMessage(`Saved ${roster.length} student${roster.length === 1 ? "" : "s"} for ${hour}.`);
+      },
+      async selectLessonClass(className) {
+        state.selectedLessonClass = className;
+        state.lessonRecords = className ? await model.getLessonsForClass(className) : [];
+        state.lessonOrderDraft = state.lessonRecords.map((record) => record.id);
+        render();
+      },
+      addLessonFile() {
+        if (!state.selectedLessonClass) {
+          showMessage("Select a class first.");
+          return;
+        }
+        lessonFileInput.click();
+      },
+      async saveMarkdownText(title, content) {
+        if (!state.selectedLessonClass) {
+          showMessage("Select a class first.");
+          return;
+        }
+        if (!String(content).trim()) {
+          showMessage("Paste markdown content first.");
+          return;
+        }
+
+        await model.addMarkdownText(state.selectedLessonClass, title.trim(), content);
+        state.lessonRecords = await model.getLessonsForClass(state.selectedLessonClass);
+        state.lessonOrderDraft = state.lessonRecords.map((record) => record.id);
+        render();
+        showMessage(`Saved markdown lesson for ${state.selectedLessonClass}.`);
+      },
+      async clearClassLessons() {
+        if (!state.selectedLessonClass) {
+          showMessage("Select a class first.");
+          return;
+        }
+        if (!window.confirm(`Clear saved lessons for ${state.selectedLessonClass}?`)) {
+          return;
+        }
+        await model.clearLessonsForClass(state.selectedLessonClass);
+        state.lessonRecords = [];
+        state.lessonOrderDraft = [];
+        render();
+        showMessage(`Cleared saved lessons for ${state.selectedLessonClass}.`);
+      },
+      async clearAllLessons() {
+        if (!window.confirm("Clear all saved lessons? This cannot be undone.")) {
+          return;
+        }
+        await model.clearAllLessons();
+        state.lessonRecords = [];
+        state.lessonOrderDraft = [];
+        render();
+        showMessage("All saved lessons cleared.");
+      },
+      chooseSound() {
+        positiveSoundInput.click();
+      },
+      previewSound() {
+        if (!settingsStore.loadPositiveSound()) {
+          showMessage("No custom sound selected.");
+          return;
+        }
+        playPositiveFeedbackSound();
+      },
+      clearSound() {
+        if (!window.confirm("Clear the saved positive feedback sound?")) {
+          return;
+        }
+        settingsStore.clearPositiveSound();
+        if (positiveSoundInput) {
+          positiveSoundInput.value = "";
+        }
+        render();
+      },
+      openReport() {
+        state.screen = "report";
+        render();
+      },
+      moveLesson(recordId, direction) {
+        updateLessonOrderDraft(recordId, direction);
+        render();
+      },
+      async saveLessonOrder() {
+        if (!state.selectedLessonClass || state.lessonOrderDraft.length < 2) {
+          return;
+        }
+        await model.reorderLessons(state.selectedLessonClass, state.lessonOrderDraft);
+        state.lessonRecords = await model.getLessonsForClass(state.selectedLessonClass);
+        state.lessonOrderDraft = state.lessonRecords.map((record) => record.id);
+        render();
+        showMessage(`Saved lesson order for ${state.selectedLessonClass}.`);
+      }
+    });
+    return;
+  }
+
+  if (state.screen === "report") {
+    const filteredLogs = behaviorService.getFilteredLogs(state.reportFilters);
+    renderReportScreen(appRoot, {
+      filters: state.reportFilters,
+      classOptions: model.classOptions,
+      logs: filteredLogs,
+      stats: behaviorService.getReportStats(filteredLogs)
+    }, {
+      backAdmin() {
+        state.screen = "admin";
+        render();
+      },
+      updateFilters(nextFilters) {
+        state.reportFilters = nextFilters;
+        render();
+      },
+      exportCsv() {
+        if (!filteredLogs.length) {
+          showMessage("No data to export.");
+          return;
+        }
+        exportLogsCsv(filteredLogs);
+      },
+      clearLogs() {
+        if (!window.confirm("Clear all behavior logs? This cannot be undone.")) {
+          return;
+        }
+        behaviorService.clearLogs();
+        render();
+      }
+    });
+    return;
+  }
+
+  if (state.screen === "lesson") {
+    const lessonStage = buildLessonStageModel(getCurrentLessonRecord(), state.markdownSlideIndex);
+    const hourSummary = behaviorService.getHourSummary(state.currentHour, state.currentClass);
+    const annotationKey = getCurrentAnnotationKey();
+    renderLessonScreen(appRoot, {
+      currentHour: state.currentHour,
+      currentClass: state.currentClass,
+      lessonRecords: state.lessonRecords,
+      lessonIndex: state.lessonIndex,
+      markdownSlideIndex: state.markdownSlideIndex,
+      selectedBehavior: state.selectedBehavior,
+      coldCallName: state.coldCallName,
+      coldCallRemaining: state.coldCallRemaining.length,
+      warningCategories: getWarningCategories(),
+      roster: model.getRoster(state.currentHour),
+      recentLogs: hourSummary.recentLogs,
+      annotation: annotationService.getViewModel(annotationKey),
+      lessonStage
+    }, {
+      backHome() {
+        model.clearSession();
+        state.screen = "home";
+        state.lessonRecords = [];
+        state.lessonIndex = 0;
+        state.markdownSlideIndex = 0;
+        state.selectedBehavior = null;
+        render();
+      },
+      previous(markdownSlideCount) {
+        const record = state.lessonRecords[state.lessonIndex];
+        if (record?.type === "markdown" && state.markdownSlideIndex > 0) {
+          state.markdownSlideIndex -= 1;
+          persistLessonSession();
+          render();
+          return;
+        }
+
+        if (state.lessonRecords.length > 1) {
+          state.lessonIndex = (state.lessonIndex - 1 + state.lessonRecords.length) % state.lessonRecords.length;
+          state.markdownSlideIndex = 0;
+          persistLessonSession();
+          render();
+          return;
+        }
+
+        if (record?.type === "markdown" && markdownSlideCount > 0) {
+          state.markdownSlideIndex = 0;
+          persistLessonSession();
+          render();
+        }
+      },
+      next(markdownSlideCount) {
+        const record = state.lessonRecords[state.lessonIndex];
+        if (record?.type === "markdown" && state.markdownSlideIndex < markdownSlideCount - 1) {
+          state.markdownSlideIndex += 1;
+          persistLessonSession();
+          render();
+          return;
+        }
+
+        if (state.lessonRecords.length > 1) {
+          state.lessonIndex = (state.lessonIndex + 1) % state.lessonRecords.length;
+          state.markdownSlideIndex = 0;
+          persistLessonSession();
+          render();
+        }
+      },
+      openLessonFile() {
+        if (!state.currentClass) {
+          showMessage("No class is active for this lesson.");
+          return;
+        }
+        lessonFileInput.click();
+      },
+      coldCall() {
+        const student = getNextColdCallStudent();
+        if (!student) {
+          showMessage("No students available in this hour.");
+          return;
+        }
+        state.coldCallName = student;
+        render();
+      },
+      selectBehavior(selection) {
+        state.selectedBehavior = resolveBehaviorSelection(selection);
+        render();
+      },
+      logBehavior(studentName) {
+        logBehavior(studentName);
+      },
+      quickAddStudent(name) {
+        const trimmed = String(name || "").trim();
+        if (!trimmed) {
+          showMessage("Enter a student name.");
+          return;
+        }
+        const currentRoster = model.getRoster(state.currentHour);
+        if (currentRoster.includes(trimmed)) {
+          showMessage(`${trimmed} is already in ${state.currentHour}.`);
+          return;
+        }
+        model.saveRoster(state.currentHour, `${currentRoster.join("\n")}${currentRoster.length ? "\n" : ""}${trimmed}`);
+        resetColdCallRotation();
+        render();
+      },
+      toggleAnnotationMode() {
+        annotationService.toggleMode();
+        render();
+      },
+      toggleAnnotationToolbarPosition() {
+        annotationService.toggleToolbarPosition();
+        render();
+      },
+      setAnnotationTool(tool) {
+        annotationService.setTool(tool);
+        render();
+      },
+      setAnnotationColor(color) {
+        annotationService.setColor(color);
+        render();
+      },
+      undoAnnotation() {
+        annotationService.undo(annotationKey);
+        render();
+      },
+      clearAnnotations() {
+        annotationService.clear(annotationKey);
+        render();
+      }
+    });
+    initializeLessonStage(lessonStage);
+    initializeAnnotationOverlay(annotationKey);
+  }
+}
+
+lessonFileInput?.addEventListener("change", async (event) => {
+  const files = Array.from(event.target.files || []);
+  const targetClass = getActiveLessonImportClass();
+  event.target.value = "";
+  if (!files.length || !targetClass) {
+    return;
+  }
+
+  try {
+    const result = await model.addLessonFiles(targetClass, files);
+
+    if (state.screen === "lesson" && state.currentClass === targetClass) {
+      state.lessonRecords = await model.getLessonSequenceForClass(targetClass);
+      if (result.addedCount > 0) {
+        state.lessonIndex = Math.max(0, state.lessonRecords.length - 1 - result.addedCount);
+      }
+      state.markdownSlideIndex = 0;
+      persistLessonSession();
+    }
+
+    if (state.selectedLessonClass === targetClass) {
+      state.lessonRecords = await model.getLessonsForClass(targetClass);
+      state.lessonOrderDraft = state.lessonRecords.map((record) => record.id);
+    }
+
+    render();
+
+    if (!result.pdfCount && !result.markdownCount && !result.docxCount) {
+      showMessage("No supported lesson files were selected.");
+      return;
+    }
+
+    const parts = [];
+    if (result.pdfCount) {
+      parts.push(`${result.pdfCount} PDF${result.pdfCount === 1 ? "" : "s"}`);
+    }
+    if (result.markdownCount) {
+      parts.push(`${result.markdownCount} markdown file${result.markdownCount === 1 ? "" : "s"}`);
+    }
+    if (result.docxCount) {
+      parts.push(`${result.docxCount} DOCX file${result.docxCount === 1 ? "" : "s"}`);
+    }
+    const unsupportedSuffix = result.unsupportedCount
+      ? ` Ignored unsupported file${result.unsupportedCount === 1 ? "" : "s"}: ${result.unsupportedNames.join(", ")}.`
+      : "";
+    showMessage(`Added ${parts.join(" and ")} for ${targetClass}.${unsupportedSuffix}`);
+  } catch (error) {
+    showMessage(String(error?.message || error || "Unable to import lesson files."));
+  }
+});
+
+positiveSoundInput?.addEventListener("change", (event) => {
+  const file = event.target.files?.[0];
+  if (!file) {
+    return;
+  }
+  if (!file.type.startsWith("audio/")) {
+    showMessage("Please choose an audio file.");
+    event.target.value = "";
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      settingsStore.savePositiveSound(String(reader.result || ""));
+      render();
+      showMessage("Positive feedback sound saved locally.");
+    } catch (error) {
+      showMessage("Unable to save sound locally. Try a smaller file.");
+    }
+  };
+  reader.readAsDataURL(file);
+});
+
+document.addEventListener("keydown", (event) => {
+  if (state.screen !== "lesson") {
+    return;
+  }
+
+  const targetTag = event.target?.tagName?.toLowerCase?.() || "";
+  if (["input", "textarea", "select"].includes(targetTag) || event.target?.isContentEditable) {
+    return;
+  }
+
+  if (event.key === "ArrowLeft") {
+    appRoot.querySelector("#prevLessonBtn")?.click();
+    event.preventDefault();
+  }
+
+  if (event.key === "ArrowRight") {
+    appRoot.querySelector("#nextLessonBtn")?.click();
+    event.preventDefault();
+  }
+
+  const key = String(event.key || "").toLowerCase();
+  if (key === "p") {
+    annotationService.setTool("pen");
+    render();
+    event.preventDefault();
+  }
+  if (key === "h") {
+    annotationService.setTool("highlighter");
+    render();
+    event.preventDefault();
+  }
+  if (key === "e") {
+    annotationService.setTool("eraser");
+    render();
+    event.preventDefault();
+  }
+  if (key === "u") {
+    annotationService.undo(getCurrentAnnotationKey());
+    render();
+    event.preventDefault();
+  }
+});
+
+window.addEventListener("resize", () => {
+  if (state.screen !== "lesson") {
+    return;
+  }
+  initializeAnnotationOverlay(getCurrentAnnotationKey());
+});
+
+async function bootstrap() {
+  appRoot.innerHTML = '<section class="screen shell-card panel"><div class="eyebrow">Loading</div><h1 style="margin: 12px 0 0;">Preparing lesson cockpit...</h1></section>';
+  await lessonDb.init();
+  await model.hydrate();
+  const restored = model.needsSetup() ? false : await restoreLessonSession();
+
+  if (restored) {
+    resetColdCallRotation();
+    render();
+    return;
+  }
+
+  state.screen = model.needsSetup() ? "setup" : "home";
+  if (!state.selectedRosterHour) {
+    state.selectedRosterHour = hourLabels.find((hour) => !!model.hourMappings[hour]) || "";
+  }
+  render();
+}
+
+bootstrap().catch((error) => {
+  appRoot.innerHTML = `
+    <section class="screen shell-card panel">
+      <div class="eyebrow">Startup error</div>
+      <h1 style="margin: 12px 0 8px;">Unable to start the app.</h1>
+      <p class="subhead">${String(error?.message || error)}</p>
+    </section>
+  `;
+});
+
+  </script>
+</body>
+</html>
