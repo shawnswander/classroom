@@ -382,7 +382,7 @@ button {
   position: absolute;
   inset: 0;
   min-height: 100vh;
-  padding: 54px 92px 16px 16px;
+  padding: 34px 92px 16px 16px;
   border-radius: 0;
   background: transparent;
   border: none;
@@ -630,41 +630,27 @@ button {
 
 .annotation-toolbar {
   position: absolute;
-  top: 12px;
-  left: 12px;
+  top: 0;
+  left: auto;
   z-index: 5;
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  flex-wrap: nowrap;
+  gap: 4px;
   align-items: center;
-  max-width: calc(100% - 24px);
-  padding: 10px;
-  border-radius: 18px;
-  background: rgba(255, 252, 246, 0.78);
+  max-width: min(50vw, 520px);
+  padding: 1px 4px;
+  border-radius: 0 0 0 14px;
+  background: rgba(255, 252, 246, 0.92);
   border: 1px solid rgba(97, 74, 40, 0.14);
   backdrop-filter: blur(10px);
-  box-shadow: 0 10px 28px rgba(56, 39, 17, 0.12);
+  box-shadow: 0 8px 20px rgba(56, 39, 17, 0.08);
+  overflow-x: auto;
 }
 
 .annotation-toolbar.is-fixed-top {
   position: fixed;
-  top: 50px;
-  left: 50%;
-  transform: translateX(-50%);
-  max-width: min(calc(100vw - 120px), 760px);
-}
-
-.annotation-toolbar.is-fixed-bottom {
-  position: fixed;
-  left: 50%;
-  bottom: 18px;
-  transform: translateX(-50%);
-  max-width: min(calc(100vw - 120px), 760px);
-}
-
-.annotation-toolbar.is-bottom {
-  top: auto;
-  bottom: 12px;
+  top: 0;
+  right: 0;
 }
 
 .annotation-tool,
@@ -674,15 +660,15 @@ button {
 }
 
 .annotation-tool {
-  padding: 8px 12px;
+  padding: 0;
   border-radius: 999px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
 }
 
 .annotation-tool--icon {
-  width: 42px;
-  height: 42px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   display: inline-flex;
   align-items: center;
@@ -696,8 +682,8 @@ button {
 }
 
 .annotation-swatch {
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   border-radius: 999px;
   padding: 0;
 }
@@ -726,11 +712,11 @@ button {
   z-index: 12;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
   width: auto;
-  max-width: calc(100vw - 92px);
-  padding: 3px 10px 3px 3px;
-  border-radius: 0 0 24px 0;
+  max-width: calc(50vw - 12px);
+  padding: 1px 6px 1px 1px;
+  border-radius: 0 0 14px 0;
   background: rgba(255, 252, 246, 0.94);
 }
 
@@ -750,7 +736,7 @@ button {
   align-items: center;
   gap: 0;
   font-weight: 800;
-  font-size: clamp(13px, 1.45vw, 17px);
+  font-size: clamp(12px, 1.2vw, 15px);
 }
 
 .lesson-action-rail {
@@ -782,7 +768,8 @@ button {
 #backToHomeBtn {
   width: auto;
   height: auto;
-  padding: 8px;
+  padding: 4px;
+  border-radius: 10px;
 }
 
 .lesson-action-btn:hover,
@@ -805,8 +792,8 @@ button {
 
 .lesson-icon {
   display: inline-flex;
-  width: 22px;
-  height: 22px;
+  width: 16px;
+  height: 16px;
 }
 
 .lesson-icon svg {
@@ -907,7 +894,7 @@ button {
   }
 
   .lesson-topbar {
-    max-width: calc(100vw - 78px);
+    max-width: calc(50vw - 10px);
   }
 
   .lesson-stage--immersive {
@@ -930,9 +917,9 @@ button {
     left: 0;
     right: auto;
     top: 0;
-    max-width: calc(100vw - 16px);
-    padding-right: 10px;
-    border-radius: 0 0 18px 0;
+    max-width: calc(50vw - 8px);
+    padding-right: 6px;
+    border-radius: 0 0 12px 0;
   }
 
   .lesson-action-rail {
@@ -946,17 +933,13 @@ button {
   }
 
   .lesson-stage--immersive {
-    padding: 54px 12px 86px;
+    padding: 34px 12px 86px;
   }
 
   .annotation-toolbar.is-fixed-top {
-    top: 46px;
-    max-width: calc(100vw - 24px);
-  }
-
-  .annotation-toolbar.is-fixed-bottom {
-    bottom: 86px;
-    max-width: calc(100vw - 24px);
+    top: 0;
+    right: 0;
+    max-width: calc(50vw - 8px);
   }
 
   .lesson-cold-call-badge {
@@ -2616,14 +2599,13 @@ function renderLessonScreen(container, vm, actions) {
       ` : ""}
 
       ${vm.annotation.mode ? `
-        <div class="annotation-toolbar ${vm.annotation.toolbarPosition === "bottom" ? "is-fixed-bottom" : "is-fixed-top"}">
+        <div class="annotation-toolbar is-fixed-top">
           <button id="annotationPenBtn" class="annotation-tool annotation-tool--icon ${vm.annotation.tool === "pen" ? "is-active" : ""}" aria-label="Pen" title="Pen"><span class="lesson-icon">${renderIcon("pen")}</span></button>
           <button id="annotationHighlighterBtn" class="annotation-tool annotation-tool--icon ${vm.annotation.tool === "highlighter" ? "is-active" : ""}" aria-label="Highlighter" title="Highlighter"><span class="lesson-icon">${renderIcon("highlighter")}</span></button>
           <button id="annotationEraserBtn" class="annotation-tool annotation-tool--icon ${vm.annotation.tool === "eraser" ? "is-active" : ""}" aria-label="Eraser" title="Eraser"><span class="lesson-icon">${renderIcon("eraser")}</span></button>
           ${swatches.map((swatch) => `<button id="${swatch.id}" class="annotation-swatch ${vm.annotation.color.toLowerCase() === swatch.color ? "is-active" : ""}" style="background: ${swatch.color};" aria-label="${swatch.label}"></button>`).join("")}
           <button id="annotationUndoBtn" class="annotation-tool annotation-tool--icon" aria-label="Undo" title="Undo"><span class="lesson-icon">${renderIcon("undo")}</span></button>
           <button id="annotationClearBtn" class="annotation-tool annotation-tool--icon" aria-label="Clear annotations" title="Clear annotations"><span class="lesson-icon">${renderIcon("clear")}</span></button>
-          <button id="annotationPositionBtn" class="annotation-tool annotation-tool--icon" aria-label="${vm.annotation.toolbarPosition === "bottom" ? "Move toolbar up" : "Move toolbar down"}" title="${vm.annotation.toolbarPosition === "bottom" ? "Move toolbar up" : "Move toolbar down"}"><span class="lesson-icon">${renderIcon(vm.annotation.toolbarPosition === "bottom" ? "moveUp" : "moveDown")}</span></button>
         </div>
       ` : ""}
 
@@ -2720,7 +2702,6 @@ function renderLessonScreen(container, vm, actions) {
   container.querySelector("#annotationGreenBtn")?.addEventListener("click", () => actions.setAnnotationColor("#32d74b"));
   container.querySelector("#annotationUndoBtn")?.addEventListener("click", actions.undoAnnotation);
   container.querySelector("#annotationClearBtn")?.addEventListener("click", actions.clearAnnotations);
-  container.querySelector("#annotationPositionBtn")?.addEventListener("click", actions.toggleAnnotationToolbarPosition);
   container.querySelectorAll("[data-behavior-type]").forEach((button) => {
     button.addEventListener("click", () => actions.selectBehavior({
       type: button.dataset.behaviorType,
