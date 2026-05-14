@@ -718,12 +718,14 @@ button {
   position: fixed;
   top: 0;
   left: 0;
-  right: 82px;
+  right: auto;
   z-index: 12;
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 4px 12px 4px 4px;
+  width: auto;
+  max-width: calc(100vw - 92px);
+  padding: 3px 10px 3px 3px;
   border-radius: 0 0 24px 0;
   background: rgba(255, 252, 246, 0.94);
 }
@@ -742,17 +744,9 @@ button {
 .lesson-topbar-line {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0;
   font-weight: 800;
-  font-size: clamp(14px, 1.7vw, 18px);
-}
-
-.lesson-topbar-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 999px;
-  background: var(--accent);
-  flex: 0 0 auto;
+  font-size: clamp(13px, 1.45vw, 17px);
 }
 
 .lesson-action-rail {
@@ -903,7 +897,7 @@ button {
   }
 
   .lesson-topbar {
-    right: 74px;
+    max-width: calc(100vw - 78px);
   }
 
   .lesson-stage--immersive {
@@ -924,10 +918,11 @@ button {
 
   .lesson-topbar {
     left: 0;
-    right: 0;
+    right: auto;
     top: 0;
-    padding-right: 12px;
-    border-radius: 0 0 18px 18px;
+    max-width: calc(100vw - 16px);
+    padding-right: 10px;
+    border-radius: 0 0 18px 0;
   }
 
   .lesson-action-rail {
@@ -2532,10 +2527,12 @@ function renderIcon(name) {
 
 function renderLessonScreen(container, vm, actions) {
   const currentRecord = vm.lessonRecords[vm.lessonIndex];
+  const lessonTitle = currentRecord ? escapeHtml(currentRecord.name) : "No lesson selected";
+  const lessonCountLabel = vm.lessonRecords.length ? `${vm.lessonIndex + 1} of ${vm.lessonRecords.length}` : "0 of 0";
   const lessonLabel = currentRecord
-    ? `Lesson ${vm.lessonIndex + 1} of ${vm.lessonRecords.length} - ${escapeHtml(currentRecord.name)}`
+    ? `Lesson ${vm.lessonIndex + 1} of ${vm.lessonRecords.length} - ${lessonTitle}`
     : "No lesson selected";
-  const topBarLabel = `${escapeHtml(vm.currentHour)}<span class="lesson-topbar-dot"></span>${escapeHtml(vm.currentClass)}<span class="lesson-topbar-dot"></span>${lessonLabel}`;
+  const topBarLabel = `${lessonTitle} ${lessonCountLabel}`;
 
   const warningsHtml = vm.warningCategories.length
     ? `<div class="warning-row">${vm.warningCategories.map((category) => `<div class="warning-chip">${escapeHtml(category)} warning active (+1 severity)</div>`).join("")}</div>`
