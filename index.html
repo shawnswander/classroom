@@ -619,7 +619,7 @@ button {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  touch-action: none;
+  touch-action: pan-x pan-y pinch-zoom;
   z-index: 4;
 }
 
@@ -3043,8 +3043,13 @@ function initializeAnnotationOverlay(lessonKey) {
     };
   };
 
+  const isDrawingPointer = (event) => event.pointerType === "pen" || event.pointerType === "mouse";
+
   canvas.addEventListener("pointerdown", (event) => {
     if (!annotationService.mode) {
+      return;
+    }
+    if (!isDrawingPointer(event)) {
       return;
     }
     if (event.pointerType === "mouse" && event.button !== 0) {
@@ -3063,6 +3068,9 @@ function initializeAnnotationOverlay(lessonKey) {
     if (!annotationService.mode) {
       return;
     }
+    if (!isDrawingPointer(event)) {
+      return;
+    }
     if (!annotationService.appendPoint(event.pointerId, getPoint(event))) {
       return;
     }
@@ -3071,6 +3079,9 @@ function initializeAnnotationOverlay(lessonKey) {
   });
 
   const endStroke = (event) => {
+    if (!isDrawingPointer(event)) {
+      return;
+    }
     annotationService.endStroke(event.pointerId);
   };
 
