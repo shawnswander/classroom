@@ -824,6 +824,29 @@ button {
   background: rgba(255, 251, 244, 0.92);
 }
 
+.lesson-warning-banner {
+  position: fixed;
+  top: 64px;
+  left: 50%;
+  z-index: 11;
+  transform: translateX(-50%);
+  min-width: 240px;
+  max-width: min(460px, calc(100vw - 180px));
+  padding: 14px 18px;
+  border-radius: 22px;
+  border: 1px solid rgba(186, 63, 40, 0.22);
+  background: rgba(255, 244, 238, 0.95);
+  box-shadow: 0 18px 48px rgba(123, 59, 33, 0.14);
+}
+
+.lesson-warning-copy {
+  margin-top: 6px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #8c2f1f;
+  text-align: center;
+}
+
 .lesson-cold-call-name {
   margin: 10px 0 6px;
   font-family: Georgia, "Times New Roman", serif;
@@ -965,6 +988,16 @@ button {
     right: 12px;
     max-width: none;
     min-width: 0;
+  }
+
+  .lesson-warning-banner {
+    top: 56px;
+    left: 12px;
+    right: 12px;
+    transform: none;
+    max-width: none;
+    min-width: 0;
+    text-align: center;
   }
 
   .lesson-behavior-drawer {
@@ -2553,6 +2586,14 @@ function renderLessonScreen(container, vm, actions) {
     ? `Lesson ${vm.lessonIndex + 1} of ${vm.lessonRecords.length} - ${lessonTitle}`
     : "No lesson selected";
   const topBarLabel = `${lessonTitle} ${lessonCountLabel}`;
+  const mainWarningHtml = vm.warningCategories.length
+    ? `
+      <div class="lesson-warning-banner shell-card" aria-live="polite">
+        <div class="eyebrow">Escalated consequences</div>
+        <div class="lesson-warning-copy">${vm.warningCategories.map((category) => `${escapeHtml(category)} +1`).join(" • ")}</div>
+      </div>
+    `
+    : "";
 
   const warningsHtml = vm.warningCategories.length
     ? `<div class="warning-row">${vm.warningCategories.map((category) => `<div class="warning-chip">${escapeHtml(category)} warning active (+1 severity)</div>`).join("")}</div>`
@@ -2619,6 +2660,8 @@ function renderLessonScreen(container, vm, actions) {
         </div>
       ` : ""}
 
+      ${mainWarningHtml}
+
       ${vm.annotation.mode ? `
         <div class="annotation-toolbar is-fixed-top">
           <button id="annotationPenBtn" class="annotation-tool annotation-tool--icon ${vm.annotation.tool === "pen" ? "is-active" : ""}" aria-label="Pen" title="Pen"><span class="lesson-icon">${renderIcon("pen")}</span></button>
@@ -2642,7 +2685,6 @@ function renderLessonScreen(container, vm, actions) {
         <div class="lesson-drawer-header">
           <div>
             <div class="eyebrow">Behavior log</div>
-            <h2>Track behavior without leaving the lesson</h2>
           </div>
           <button id="closeBehaviorMenuBtn" class="lesson-action-btn lesson-action-btn--small" aria-label="Close behavior log" title="Close behavior log"><span class="lesson-icon">${renderIcon("close")}</span></button>
         </div>
@@ -2652,7 +2694,7 @@ function renderLessonScreen(container, vm, actions) {
           ${warningsHtml}
         </section>
 
-        <section class="lesson-drawer-section">
+        <section class="lesson-drawer-section ${vm.selectedBehavior ? "hidden" : ""}">
           <h3>Behavior</h3>
           <div class="behavior-grid lesson-behavior-grid">
             ${behaviorChoices.map((choice) => `
@@ -2686,6 +2728,7 @@ function renderLessonScreen(container, vm, actions) {
           <div class="student-grid lesson-student-grid">
             ${vm.roster.map((student) => `<button class="student-chip" data-student-name="${escapeHtml(student)}">${escapeHtml(student)}</button>`).join("")}
           </div>
+          ${vm.selectedBehavior ? '<button id="clearSelectedBehaviorBtn" class="btn-ghost">Cancel behavior</button>' : ""}
           <div class="lesson-quick-add-wrap">
             <button id="toggleQuickAddStudentBtn" class="btn-ghost">${vm.quickAddStudentOpen ? "Cancel" : "Quick add"}</button>
             <div class="field-stack lesson-drawer-stack ${vm.quickAddStudentOpen ? "" : "hidden"}">
@@ -2727,6 +2770,7 @@ function renderLessonScreen(container, vm, actions) {
   container.querySelector("#annotationUndoBtn")?.addEventListener("click", actions.undoAnnotation);
   container.querySelector("#annotationClearBtn")?.addEventListener("click", actions.clearAnnotations);
   container.querySelector("#toggleQuickAddStudentBtn")?.addEventListener("click", actions.toggleQuickAddStudent);
+  container.querySelector("#clearSelectedBehaviorBtn")?.addEventListener("click", actions.clearSelectedBehavior);
   container.querySelectorAll("[data-behavior-type]").forEach((button) => {
     button.addEventListener("click", () => actions.selectBehavior({
       type: button.dataset.behaviorType,
@@ -3570,6 +3614,10 @@ function render() {
         state.quickAddStudentOpen = !state.quickAddStudentOpen;
         render();
       },
+      clearSelectedBehavior() {
+        state.selectedBehavior = null;
+        render();
+      },
       closeBehaviorMenu() {
         if (!state.behaviorMenuOpen) {
           return;
@@ -3581,9 +3629,6 @@ function render() {
         state.selectedBehavior = resolveBehaviorSelection(selection);
         state.behaviorMenuOpen = true;
         render();
-        requestAnimationFrame(() => {
-          document.getElementById("lessonStudentSection")?.scrollIntoView({ block: "start", behavior: "smooth" });
-        });
       },
       logBehavior(studentName) {
         logBehavior(studentName);
