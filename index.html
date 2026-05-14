@@ -2580,7 +2580,7 @@ function renderLessonScreen(container, vm, actions) {
   const mainWarningHtml = vm.warningCategories.length
     ? `
       <div class="lesson-warning-banner" aria-live="polite">
-        Warning Active: ${escapeHtml(vm.warningCategories[0])}
+        Warning Active: ${vm.warningCategories.map((category) => escapeHtml(category)).join(", ")}
       </div>
     `
     : "";
