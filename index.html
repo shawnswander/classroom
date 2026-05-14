@@ -447,6 +447,10 @@ button {
   font-size: clamp(18px, 2vw, 28px);
 }
 
+.blank-board-stage {
+  min-height: 100%;
+}
+
 .markdown-stage h1,
 .markdown-stage h2,
 .markdown-stage h3 {
@@ -773,6 +777,12 @@ button {
   background: rgba(255, 255, 255, 0.84);
   color: var(--ink);
   transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease;
+}
+
+#backToHomeBtn {
+  width: auto;
+  height: auto;
+  padding: 8px;
 }
 
 .lesson-action-btn:hover,
@@ -1651,12 +1661,15 @@ return { AppModel };
 // src/services/annotation-service.js
 const { AnnotationService } = (() => {
 const toolbarPositionKey = "lessonCockpitAnnotationToolbarPosition";
+const penDefaultColor = "#1d1d1f";
+const highlighterDefaultColor = "#ffd60a";
+const highlighterColors = new Set(["#ffd60a", "#32d74b", "#64d2ff"]);
 
 class AnnotationService {
   constructor() {
     this.mode = false;
     this.tool = "pen";
-    this.color = "#1d1d1f";
+    this.color = penDefaultColor;
     this.toolbarPosition = localStorage.getItem(toolbarPositionKey) || "top";
     this.strokesByLesson = new Map();
     this.activeStroke = null;
@@ -1706,6 +1719,15 @@ class AnnotationService {
 
   setTool(tool) {
     this.tool = tool;
+    if (tool === "highlighter") {
+      if (!highlighterColors.has(this.color.toLowerCase())) {
+        this.color = highlighterDefaultColor;
+      }
+      return;
+    }
+    if (tool === "pen" && highlighterColors.has(this.color.toLowerCase())) {
+      this.color = penDefaultColor;
+    }
   }
 
   setColor(color) {
@@ -2004,13 +2026,7 @@ function buildLessonStageModel(record, markdownSlideIndex) {
       type: "blank",
       slideCount: 0,
       record,
-      html: `
-        <div id="lessonRenderSurface" class="markdown-stage">
-          <h1>Blank Board</h1>
-          <p>This class can always open into a ready-to-write board, even when no file-based lesson has been added yet.</p>
-          <p>Use annotations here for live notes, worked examples, diagrams, or impromptu teaching moments.</p>
-        </div>
-      `
+      html: '<div id="lessonRenderSurface" class="markdown-stage blank-board-stage"></div>'
     };
   }
 
@@ -2514,7 +2530,7 @@ function renderIcon(name) {
     annotate: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 20 4.5-1 9.7-9.7a1.8 1.8 0 0 0 0-2.6l-.9-.9a1.8 1.8 0 0 0-2.6 0L5 15.5 4 20Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.8"/><path d="m13 7 4 4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"/></svg>',
     pen: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 20 4.5-1 9.7-9.7a1.8 1.8 0 0 0 0-2.6l-.9-.9a1.8 1.8 0 0 0-2.6 0L5 15.5 4 20Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.8"/></svg>',
     highlighter: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 15 6-6 4 4-6 6H7z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.8"/><path d="M14 8 16 6l2 2-2 2" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.8"/><path d="M6 18h6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"/></svg>',
-    eraser: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 7 7.5 7.5-4 4H7.5l-3-3 7-8.5Z" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.8"/><path d="M13.5 18H20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"/></svg>',
+    eraser: '<svg viewBox="0 0 24 24" aria-hidden="true"><g transform="translate(12 12) rotate(45) translate(-12 -12)"><rect x="7" y="8" width="10" height="8" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/></g></svg>',
     undo: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 8H5v-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9"/><path d="M5 8c1.8-2.3 4.2-3.5 7.3-3.5 4.5 0 7.7 3 7.7 7.3 0 4.2-3 7.2-7.2 7.2-2 0-3.7-.6-5.2-1.8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9"/></svg>',
     clear: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.9"/><path d="M9 7V5h6v2" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9"/><path d="M8 7l1 11h6l1-11" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="1.9"/></svg>',
     moveUp: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 6-5 5m5-5 5 5M12 6v12" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9"/></svg>',
@@ -2559,6 +2575,17 @@ function renderLessonScreen(container, vm, actions) {
   const selectedBehaviorLabel = vm.selectedBehavior
     ? `Selected: ${escapeHtml(vm.selectedBehavior.category)}${vm.selectedBehavior.type === "negative" ? ` (${vm.selectedBehavior.points} point${vm.selectedBehavior.points === 1 ? "" : "s"})` : ""}`
     : "Select a behavior, then tap a student.";
+  const swatches = vm.annotation.tool === "highlighter"
+    ? [
+      { id: "annotationYellowBtn", color: "#ffd60a", label: "Yellow" },
+      { id: "annotationCyanBtn", color: "#64d2ff", label: "Cyan" },
+      { id: "annotationGreenBtn", color: "#32d74b", label: "Green" }
+    ]
+    : [
+      { id: "annotationRedBtn", color: "#ff3b30", label: "Red" },
+      { id: "annotationBlueBtn", color: "#007aff", label: "Blue" },
+      { id: "annotationBlackBtn", color: "#1d1d1f", label: "Black" }
+    ];
 
   container.innerHTML = `
     <section class="screen lesson-screen">
@@ -2593,9 +2620,7 @@ function renderLessonScreen(container, vm, actions) {
           <button id="annotationPenBtn" class="annotation-tool annotation-tool--icon ${vm.annotation.tool === "pen" ? "is-active" : ""}" aria-label="Pen" title="Pen"><span class="lesson-icon">${renderIcon("pen")}</span></button>
           <button id="annotationHighlighterBtn" class="annotation-tool annotation-tool--icon ${vm.annotation.tool === "highlighter" ? "is-active" : ""}" aria-label="Highlighter" title="Highlighter"><span class="lesson-icon">${renderIcon("highlighter")}</span></button>
           <button id="annotationEraserBtn" class="annotation-tool annotation-tool--icon ${vm.annotation.tool === "eraser" ? "is-active" : ""}" aria-label="Eraser" title="Eraser"><span class="lesson-icon">${renderIcon("eraser")}</span></button>
-          <button id="annotationRedBtn" class="annotation-swatch ${vm.annotation.color.toLowerCase() === "#ff3b30" ? "is-active" : ""}" style="background: #ff3b30;" aria-label="Red"></button>
-          <button id="annotationBlueBtn" class="annotation-swatch ${vm.annotation.color.toLowerCase() === "#007aff" ? "is-active" : ""}" style="background: #007aff;" aria-label="Blue"></button>
-          <button id="annotationBlackBtn" class="annotation-swatch ${vm.annotation.color.toLowerCase() === "#1d1d1f" ? "is-active" : ""}" style="background: #1d1d1f;" aria-label="Black"></button>
+          ${swatches.map((swatch) => `<button id="${swatch.id}" class="annotation-swatch ${vm.annotation.color.toLowerCase() === swatch.color ? "is-active" : ""}" style="background: ${swatch.color};" aria-label="${swatch.label}"></button>`).join("")}
           <button id="annotationUndoBtn" class="annotation-tool annotation-tool--icon" aria-label="Undo" title="Undo"><span class="lesson-icon">${renderIcon("undo")}</span></button>
           <button id="annotationClearBtn" class="annotation-tool annotation-tool--icon" aria-label="Clear annotations" title="Clear annotations"><span class="lesson-icon">${renderIcon("clear")}</span></button>
           <button id="annotationPositionBtn" class="annotation-tool annotation-tool--icon" aria-label="${vm.annotation.toolbarPosition === "bottom" ? "Move toolbar up" : "Move toolbar down"}" title="${vm.annotation.toolbarPosition === "bottom" ? "Move toolbar up" : "Move toolbar down"}"><span class="lesson-icon">${renderIcon(vm.annotation.toolbarPosition === "bottom" ? "moveUp" : "moveDown")}</span></button>
@@ -2688,8 +2713,11 @@ function renderLessonScreen(container, vm, actions) {
   container.querySelector("#annotationHighlighterBtn")?.addEventListener("click", () => actions.setAnnotationTool("highlighter"));
   container.querySelector("#annotationEraserBtn")?.addEventListener("click", () => actions.setAnnotationTool("eraser"));
   container.querySelector("#annotationRedBtn")?.addEventListener("click", () => actions.setAnnotationColor("#ff3b30"));
-  container.querySelector("#annotationBlueBtn")?.addEventListener("click", () => actions.setAnnotationColor("#007AFF"));
+  container.querySelector("#annotationBlueBtn")?.addEventListener("click", () => actions.setAnnotationColor("#007aff"));
   container.querySelector("#annotationBlackBtn")?.addEventListener("click", () => actions.setAnnotationColor("#1d1d1f"));
+  container.querySelector("#annotationYellowBtn")?.addEventListener("click", () => actions.setAnnotationColor("#ffd60a"));
+  container.querySelector("#annotationCyanBtn")?.addEventListener("click", () => actions.setAnnotationColor("#64d2ff"));
+  container.querySelector("#annotationGreenBtn")?.addEventListener("click", () => actions.setAnnotationColor("#32d74b"));
   container.querySelector("#annotationUndoBtn")?.addEventListener("click", actions.undoAnnotation);
   container.querySelector("#annotationClearBtn")?.addEventListener("click", actions.clearAnnotations);
   container.querySelector("#annotationPositionBtn")?.addEventListener("click", actions.toggleAnnotationToolbarPosition);
