@@ -399,6 +399,17 @@ button {
   box-shadow: 0 16px 48px rgba(56, 39, 17, 0.12);
 }
 
+.lesson-stage-shell.is-annotating,
+.lesson-stage-shell.is-annotating .markdown-stage,
+.lesson-stage-shell.is-annotating .pdf-stage,
+.lesson-stage-shell.is-annotating .lesson-frame,
+.lesson-stage-shell.is-annotating .blank-board-stage {
+  overflow: hidden;
+  touch-action: none;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: auto;
+}
+
 .lesson-frame {
   width: 100%;
   min-height: 62vh;
@@ -619,7 +630,7 @@ button {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  touch-action: pan-x pan-y pinch-zoom;
+  touch-action: none;
   z-index: 4;
 }
 
@@ -2610,7 +2621,7 @@ function renderLessonScreen(container, vm, actions) {
       ` : ""}
 
       <section class="lesson-stage lesson-stage--immersive">
-        <div class="lesson-stage-shell" id="lessonStageShell">
+        <div class="lesson-stage-shell ${vm.annotation.mode ? "is-annotating" : ""}" id="lessonStageShell">
           ${vm.lessonStage.html}
           <canvas id="annotationCanvas" class="annotation-canvas ${vm.annotation.mode ? "is-active" : ""}"></canvas>
         </div>
@@ -3043,13 +3054,8 @@ function initializeAnnotationOverlay(lessonKey) {
     };
   };
 
-  const isDrawingPointer = (event) => event.pointerType === "pen" || event.pointerType === "mouse";
-
   canvas.addEventListener("pointerdown", (event) => {
     if (!annotationService.mode) {
-      return;
-    }
-    if (!isDrawingPointer(event)) {
       return;
     }
     if (event.pointerType === "mouse" && event.button !== 0) {
@@ -3068,9 +3074,6 @@ function initializeAnnotationOverlay(lessonKey) {
     if (!annotationService.mode) {
       return;
     }
-    if (!isDrawingPointer(event)) {
-      return;
-    }
     if (!annotationService.appendPoint(event.pointerId, getPoint(event))) {
       return;
     }
@@ -3078,10 +3081,14 @@ function initializeAnnotationOverlay(lessonKey) {
     event.preventDefault();
   });
 
-  const endStroke = (event) => {
-    if (!isDrawingPointer(event)) {
+  canvas.addEventListener("touchmove", (event) => {
+    if (!annotationService.mode) {
       return;
     }
+    event.preventDefault();
+  }, { passive: false });
+
+  const endStroke = (event) => {
     annotationService.endStroke(event.pointerId);
   };
 
